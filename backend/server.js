@@ -33,14 +33,20 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc:  ["'self'"],
-      scriptSrc:   ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-      styleSrc:    ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc:     ["'self'", "https://fonts.gstatic.com"],
-      imgSrc:      ["'self'", "data:", "https://api.qrserver.com"],
-      connectSrc:  ["'self'"],
-      objectSrc:   ["'none'"],
-      frameSrc:    ["'none'"],
+      defaultSrc:      ["'self'"],
+      scriptSrc:       ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      // FIX: Helmet sets script-src-attr to 'none' by default which blocks
+      // all inline onclick= handlers. Set to unsafe-inline to allow them.
+      scriptSrcAttr:   ["'unsafe-inline'"],
+      styleSrc:        ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc:         ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc:          ["'self'", "data:", "blob:", "https://api.qrserver.com",
+                        "https://www.facebook.com", "https://www.google-analytics.com"],
+      connectSrc:      ["'self'", "https://www.google-analytics.com"],
+      objectSrc:       ["'none'"],
+      frameSrc:        ["'none'"],
+      baseUri:         ["'self'"],
+      formAction:      ["'self'"],
       upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
     },
   },
@@ -109,6 +115,29 @@ app.get('/api/health', (req, res) => res.json({
   // Don't expose db type or internals in production
   ...(process.env.NODE_ENV !== 'production' && { db: 'json-file' }),
 }));
+
+// ── SEO & favicon ─────────────────────────────────────────────
+// Browsers always request favicon.ico — serve svg or silent 204 to kill the 404
+app.get('/favicon.ico', (req, res) => {
+  const p = path.join(__dirname, '../frontend/public/images/favicon.svg');
+  if (require('fs').existsSync(p)) {
+    res.setHeader('Content-Type', 'image/svg+xml');
+    return res.sendFile(p);
+  }
+  res.status(204).end();
+});
+app.get('/favicon.svg', (req, res) => {
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.sendFile(path.join(__dirname, '../frontend/public/images/favicon.svg'));
+});
+app.get('/sitemap.xml', (req, res) => {
+  res.setHeader('Content-Type', 'application/xml');
+  res.sendFile(path.join(__dirname, '../frontend/public/sitemap.xml'));
+});
+app.get('/robots.txt', (req, res) => {
+  res.setHeader('Content-Type', 'text/plain');
+  res.sendFile(path.join(__dirname, '../frontend/public/robots.txt'));
+});
 
 // ── Serve frontend ────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '../frontend')));

@@ -426,7 +426,7 @@ ul {
 .hero-bg {
     position: absolute;
     inset: 0;
-    background: url('photos/photo1.png') center / cover no-repeat, var(--pine);
+    background: var(--pine);
 }
 
 .hero-overlay {
