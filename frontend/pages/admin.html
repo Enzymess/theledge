@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Ledge — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/public/css/admin.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+.dash-charts{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+.chart-card{background:var(--pine);border:1px solid var(--border);padding:1.4rem}
+.chart-card-title{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between}
+.chart-canvas-wrap{position:relative;height:180px}
+.donut-legend{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.8rem}
+.donut-legend-item{display:flex;align-items:center;gap:0.6rem;font-size:0.67rem;color:rgba(245,240,232,0.65)}
+.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.schedule-filters{display:flex;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.filter-btn{background:transparent;border:1px solid var(--border-md);color:rgba(200,216,204,0.45);font-size:0.62rem;letter-spacing:0.1em;padding:0.35rem 0.9rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(197,162,85,0.08)}
+.schedule-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:1.5rem}
+.sch-head{background:var(--pine);padding:0.6rem 0.4rem;text-align:center;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,216,204,0.3)}
+.sch-cell{background:var(--pine);padding:0.4rem;min-height:76px;cursor:pointer;transition:background 0.15s}
+.sch-cell:hover{background:rgba(197,162,85,0.03)}
+.sch-date{font-size:0.65rem;color:rgba(245,240,232,0.35);margin-bottom:0.3rem}
+.sch-date.today{color:var(--gold);font-weight:500}
+.sch-booking{font-size:0.56rem;padding:0.15rem 0.35rem;margin-bottom:2px;border-radius:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.sch-booking.confirmed{background:rgba(76,175,128,0.18);color:#6fcca0;border-left:2px solid #4caf80}
+.sch-booking.pending{background:rgba(197,162,85,0.18);color:#d4b570;border-left:2px solid var(--gold)}
+.sch-booking.checked_in{background:rgba(90,143,197,0.18);color:#82aed4;border-left:2px solid #5a8fc5}
+.sch-more{font-size:0.52rem;color:rgba(200,216,204,0.28)}
+.rooms-manager{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.room-card-edit{background:var(--pine);border:1px solid var(--border);overflow:hidden;transition:border-color 0.2s}
+.room-card-edit:hover{border-color:var(--border-md)}
+.room-photo-area{position:relative;height:155px;background:rgba(255,255,255,0.03);overflow:hidden}
+.room-photo-area img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s}
+.room-photo-area:hover img{transform:scale(1.03)}
+.room-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;color:rgba(200,216,204,0.18);font-size:0.62rem;letter-spacing:0.1em}
+.room-photo-placeholder span{font-size:1.8rem}
+.photo-overlay{position:absolute;inset:0;background:rgba(10,18,10,0.72);display:flex;align-items:center;justify-content:center;gap:0.6rem;opacity:0;transition:opacity 0.2s}
+.room-photo-area:hover .photo-overlay{opacity:1}
+.photo-btn{background:rgba(197,162,85,0.15);border:1px solid rgba(197,162,85,0.4);color:var(--gold);font-size:0.6rem;letter-spacing:0.1em;padding:0.4rem 1rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.photo-btn:hover{background:rgba(197,162,85,0.3)}
+.photo-thumbs{display:flex;gap:4px;padding:0.5rem 0.8rem;background:rgba(0,0,0,0.18);flex-wrap:wrap;min-height:42px;align-items:center}
+.photo-thumb{position:relative;width:46px;height:38px;border-radius:2px;overflow:hidden;border:1px solid var(--border-md);flex-shrink:0;cursor:pointer}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb.active-thumb{border-color:var(--gold)}
+.photo-thumb-del{position:absolute;top:1px;right:1px;background:rgba(192,89,74,0.88);color:#fff;border:none;font-size:7px;width:13px;height:13px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.photo-add-btn{width:46px;height:38px;border:1px dashed rgba(200,216,204,0.18);background:transparent;color:rgba(200,216,204,0.22);font-size:1.1rem;cursor:pointer;border-radius:2px;transition:all 0.2s;flex-shrink:0}
+.photo-add-btn:hover{border-color:var(--gold);color:var(--gold)}
+.room-fields{padding:0.9rem 1.1rem}
+.room-field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.6rem}
+.room-field-full{margin-bottom:0.6rem}
+.amenity-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:0.3rem;min-height:22px}
+.amenity-tag{display:inline-flex;align-items:center;gap:3px;background:rgba(197,162,85,0.1);border:1px solid rgba(197,162,85,0.2);color:var(--gold);font-size:0.56rem;padding:0.15rem 0.45rem;border-radius:2px}
+.amenity-tag button{background:none;border:none;color:var(--gold);cursor:pointer;font-size:0.65rem;line-height:1;padding:0;opacity:0.55}
+.amenity-tag button:hover{opacity:1}
+.amenity-add-row{display:flex;gap:0.5rem;margin-top:0.35rem}
+.room-footer{display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1.1rem;border-top:1px solid var(--border)}
+.status-toggle-wrap{display:flex;align-items:center;gap:0.5rem;font-size:0.6rem;color:rgba(200,216,204,0.38)}
+.room-actions{display:flex;gap:0.4rem}
+.room-card-add{background:transparent;border:1px dashed rgba(200,216,204,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;min-height:280px;cursor:pointer;transition:all 0.2s}
+.room-card-add:hover{border-color:var(--gold);background:rgba(197,162,85,0.03)}
+.room-card-add span{font-size:2rem;color:rgba(200,216,204,0.18)}
+.room-card-add p{font-size:0.63rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.22)}
+.overlay-backdrop{display:none;position:fixed;inset:0;background:rgba(10,18,10,0.88);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:1.5rem}
+.overlay-backdrop.open{display:flex}
+.overlay-box{background:var(--pine);border:1px solid var(--border-md);width:min(480px,100%);max-height:90vh;overflow-y:auto;padding:2rem;position:relative;animation:fadeUp 0.25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.overlay-title{font-family:var(--font-serif);font-size:1.5rem;font-weight:300;margin-bottom:0.2rem}
+.overlay-sub{font-size:0.63rem;color:rgba(200,216,204,0.32);margin-bottom:1.5rem;letter-spacing:0.05em}
+.overlay-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(200,216,204,0.35);font-size:1.1rem;cursor:pointer;transition:color 0.2s}
+.overlay-close:hover{color:var(--cream)}
+.detail-row{display:flex;justify-content:space-between;padding:0.48rem 0;border-bottom:1px solid var(--border);font-size:0.73rem}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:rgba(200,216,204,0.38)}
+.detail-value{color:var(--cream);text-align:right;max-width:60%}
+.status-select{background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.72rem;padding:0.4rem 0.7rem;outline:none}
+.status-select option{background:var(--pine-dark)}
+input[type=file]{display:none}
+/* Admin Calendar */
+.cal-month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-m-head{font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.3);padding:0.4rem 0;text-align:center}
+.cal-m-cell{min-height:70px;border:1px solid rgba(200,216,204,0.07);padding:0.4rem;cursor:pointer;position:relative;transition:border-color 0.15s,background 0.15s;border-radius:2px}
+.cal-m-cell:hover{border-color:rgba(200,216,204,0.2);background:rgba(255,255,255,0.02)}
+.cal-m-cell.today{border-color:rgba(197,162,85,0.4)!important}
+.cal-m-cell.other-month{opacity:0.3;cursor:default}
+.cal-m-cell.status-available{background:rgba(76,175,128,0.06)}
+.cal-m-cell.status-partial{background:rgba(197,162,85,0.06)}
+.cal-m-cell.status-full{background:rgba(192,89,74,0.08)}
+.cal-m-cell.status-blocked{background:rgba(90,90,90,0.15);cursor:not-allowed}
+.cal-m-cell.selected{border-color:var(--gold)!important;background:rgba(197,162,85,0.1)!important}
+.cal-m-date{font-size:0.7rem;color:rgba(245,240,232,0.4);margin-bottom:0.25rem}
+.cal-m-date.today-num{color:var(--gold);font-weight:500}
+.cal-m-status{font-size:0.55rem;padding:0.12rem 0.35rem;border-radius:2px;display:inline-block;margin-bottom:2px}
+.cal-m-status.available{background:rgba(76,175,128,0.2);color:#6fcca0}
+.cal-m-status.partial{background:rgba(197,162,85,0.2);color:#d4b570}
+.cal-m-status.full{background:rgba(192,89,74,0.2);color:#e08070}
+.cal-m-status.blocked{background:rgba(90,90,90,0.3);color:rgba(200,216,204,0.5)}
+.cal-m-rooms{display:flex;flex-direction:column;gap:1px;margin-top:2px}
+.cal-m-room-dot{width:100%;height:4px;border-radius:1px}
+.room-occ-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.7rem}
+.room-occ-label{font-size:0.68rem;color:rgba(245,240,232,0.6);min-width:130px;flex-shrink:0}
+.room-occ-bar-wrap{flex:1;height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;position:relative}
+.room-occ-bar{height:100%;border-radius:4px;transition:width 0.4s ease}
+.room-occ-pct{font-size:0.62rem;color:rgba(200,216,204,0.4);min-width:35px;text-align:right}
+
+/* Guest Payment Status Badges */
+.payment-badge{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.6rem;border-radius:2px;font-weight:500}
+.payment-badge.paid{background:rgba(76,175,128,0.15);color:#6fcca0;border:1px solid rgba(76,175,128,0.25)}
+.payment-badge.pending{background:rgba(197,162,85,0.15);color:#d4b570;border:1px solid rgba(197,162,85,0.25)}
+.payment-badge.not-emailed{background:rgba(192,89,74,0.15);color:#e08070;border:1px solid rgba(192,89,74,0.25)}
+.payment-badge.partial{background:rgba(90,143,197,0.15);color:#82aed4;border:1px solid rgba(90,143,197,0.25)}
+
+/* Email Status Indicator */
+.email-status{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.55rem;color:rgba(200,216,204,0.5)}
+.email-status.sent{color:#6fcca0}
+.email-status.not-sent{color:rgba(200,216,204,0.35)}
+
+/* Feedback Styles */
+.feedback-card{background:var(--pine);border:1px solid var(--border);padding:1.2rem;margin-bottom:1rem;transition:border-color 0.2s}
+.feedback-card:hover{border-color:var(--border-md)}
+.feedback-card.pending{border-left:3px solid var(--warning)}
+.feedback-card.approved{border-left:3px solid var(--success)}
+.feedback-card.rejected{border-left:3px solid var(--danger)}
+.feedback-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem}
+.feedback-author{font-family:var(--font-serif);font-size:1rem;font-weight:300;color:var(--cream)}
+.feedback-email{font-size:0.65rem;color:rgba(200,216,204,0.4)}
+.feedback-rating{color:var(--gold);font-size:0.9rem;letter-spacing:0.1em}
+.feedback-message{font-size:0.78rem;line-height:1.7;color:rgba(245,240,232,0.7);margin-bottom:1rem}
+.feedback-date{font-size:0.58rem;color:rgba(200,216,204,0.35);letter-spacing:0.05em}
+.feedback-actions{display:flex;gap:0.5rem}
+
+/* Homepage Images Manager */
+.images-manager{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.image-card{background:var(--pine);border:1px solid var(--border);overflow:hidden}
+.image-card-header{padding:0.8rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.image-card-title{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8}
+.image-preview{height:150px;background-size:cover;background-position:center;background-color:rgba(255,255,255,0.03)}
+.image-card-body{padding:1rem}
+.image-card-body .form-group{margin-bottom:0.8rem}
+.image-card-body label{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.4);margin-bottom:0.3rem;display:block}
+.image-card-body input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.5rem 0.7rem;outline:none}
+
+@media(max-width:900px){.dash-charts{grid-template-columns:1fr}.rooms-manager{grid-template-columns:1fr}.schedule-grid{grid-template-columns:repeat(3,1fr)}.images-manager{grid-template-columns:1fr}}
+@media(max-width:700px){.cal-month-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><p>The <span>Ledge</span></p><small>Admin Panel</small></div>
+  <div class="nav-section">
+    <p class="nav-label">Overview</p>
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">&#9638;</span> Dashboard</div>
+    <div class="nav-item" onclick="showPage('schedule',this)"><span class="nav-icon">&#9633;</span> Schedule</div>
+    <div class="nav-item" onclick="showPage('reservations',this)"><span class="nav-icon">&#9635;</span> Reservations</div>
+    <div class="nav-item" onclick="showPage('cancellations',this)"><span class="nav-icon">&#9675;</span> Cancellations</div>
+  </div>
+  <div class="nav-section">
+    <p class="nav-label">Management</p>
+    <div class="nav-item" onclick="showPage('rooms',this)"><span class="nav-icon">&#8862;</span> Rooms</div>
+    <div class="nav-item" onclick="showPage('pricing',this)"><span class="nav-icon">&#9672;</span> Pricing & Rates</div>
+    <div class="nav-item" onclick="showPage('policies',this)"><span class="nav-icon">&#9702;</span> Policies</div>
+    <div class="nav-item" onclick="showPage('images',this)"><span class="nav-icon">&#9636;</span> Homepage Images</div>
+  </div>
+  <div class="nav-section">
+    <p class="nav-label">Insights</p>
+    <div class="nav-item" onclick="showPage('reports',this)"><span class="nav-icon">&#9637;</span> Reports</div>
+    <div class="nav-item" onclick="showPage('guests',this)"><span class="nav-icon">&#9673;</span> Guests</div>
+    <div class="nav-item" onclick="showPage('feedback',this)"><span class="nav-icon">&#9993;</span> Feedback</div>
+    <div class="nav-item" onclick="showPage('store',this)"><span class="nav-icon">&#9749;</span> Honesty Store</div>
+  </div>
+  <div class="nav-section">
+    <p class="nav-label">System</p>
+    <div class="nav-item" onclick="showPage('staff',this)"><span class="nav-icon">&#9677;</span> Staff & Access</div>
+    <div class="nav-item" onclick="showPage('settings',this)"><span class="nav-icon">&#9687;</span> Settings</div>
+    <div class="nav-item" onclick="logout()"><span class="nav-icon">&#8594;</span> Logout</div>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="admin-badge">
+      <div class="admin-avatar" id="av">AD</div>
+      <div class="admin-info"><p class="admin-name">Admin</p><small class="admin-role">—</small></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard <em>Overview</em></div>
+    <div class="topbar-right">
+      <div class="notif-btn">&#9635;<span class="notif-dot" id="notif-dot" style="display:none"></span></div>
+      <a href="/" style="font-size:0.63rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.38);text-decoration:none;transition:color 0.2s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='rgba(200,216,204,0.38)'">View Site</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="metrics-grid">
+        <div class="metric-card"><p class="metric-label">Total Revenue</p><p class="metric-value" id="m-revenue"><span>PHP</span>—</p><p class="metric-change">This year</p></div>
+        <div class="metric-card"><p class="metric-label">Total Bookings</p><p class="metric-value" id="m-bookings">—</p><p class="metric-change up">All time</p></div>
+        <div class="metric-card"><p class="metric-label">Confirmed Stays</p><p class="metric-value" id="m-confirmed">—</p><p class="metric-change up">Active</p></div>
+        <div class="metric-card"><p class="metric-label">Pending Requests</p><p class="metric-value" id="m-pending">—</p><p class="metric-change down">Needs action</p></div>
+      </div>
+      <div class="dash-charts">
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>Monthly Revenue</span>
+            <select class="status-select" id="chart-year" onchange="loadDashboard()" style="font-size:0.58rem;padding:0.18rem 0.5rem;border-color:rgba(200,216,204,0.12)">
+              <option value="2025">2025</option><option value="2026">2026</option>
+            </select>
+          </div>
+          <div class="chart-canvas-wrap"><canvas id="revenue-chart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title"><span>Booking Status</span></div>
+          <div class="chart-canvas-wrap" style="height:130px"><canvas id="status-chart"></canvas></div>
+          <div class="donut-legend" id="donut-legend"></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <span class="section-card-title">Upcoming Stays — Next 7 Days</span>
+          <button class="section-card-action" onclick="showPage('schedule',document.querySelector('.nav-item:nth-child(2)'))">Full schedule →</button>
+        </div>
+        <table>
+          <thead><tr><th>Guest</th><th>Room</th><th>Check In</th><th>Check Out</th><th>Nights</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="upcoming-body"><tr><td colspan="8" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SCHEDULE / CALENDAR -->
+    <div class="page" id="page-schedule">
+
+      <!-- View toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.8rem">
+        <div style="display:flex;gap:0.5rem">
+          <button class="filter-btn active" id="cal-view-month" onclick="switchCalView('month',this)">Monthly</button>
+          <button class="filter-btn" id="cal-view-week" onclick="switchCalView('week',this)">Weekly</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <button class="filter-btn" onclick="calNav(-1)">&#8249; Prev</button>
+          <span id="cal-nav-label" style="font-size:0.68rem;color:rgba(245,240,232,0.6);min-width:160px;text-align:center;font-weight:500"></span>
+          <button class="filter-btn" onclick="calNav(1)">Next &#8250;</button>
+          <button class="filter-btn" onclick="goToday()" style="margin-left:0.3rem">Today</button>
+        </div>
+        <button class="btn-save" style="padding:0.5rem 1.2rem;font-size:0.65rem" onclick="openBlockModal()">+ Block Dates</button>
+      </div>
+
+      <!-- Monthly calendar -->
+      <div id="cal-monthly-wrap" class="section-card" style="margin-bottom:1.2rem">
+        <div class="section-card-header">
+          <span class="section-card-title" id="cal-month-header">April 2026</span>
+          <div style="display:flex;gap:1rem">
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.6rem;color:rgba(200,216,204,0.4)"><div style="width:10px;height:10px;background:rgba(76,175,128,0.4);border-radius:2px"></div>Available</div>
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.6rem;color:rgba(200,216,204,0.4)"><div style="width:10px;height:10px;background:rgba(197,162,85,0.4);border-radius:2px"></div>Partial</div>
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.6rem;color:rgba(200,216,204,0.4)"><div style="width:10px;height:10px;background:rgba(192,89,74,0.4);border-radius:2px"></div>Full</div>
+            <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.6rem;color:rgba(200,216,204,0.4)"><div style="width:10px;height:10px;background:rgba(90,90,90,0.5);border-radius:2px"></div>Blocked</div>
+          </div>
+        </div>
+        <div id="cal-monthly-grid" style="padding:1rem"></div>
+      </div>
+
+      <!-- Weekly view -->
+      <div id="cal-weekly-wrap" style="display:none;margin-bottom:1.2rem">
+        <div class="schedule-filters" style="margin-bottom:0.8rem">
+          <button class="filter-btn active" onclick="setSchedFilter('all',this)">All</button>
+          <button class="filter-btn" onclick="setSchedFilter('confirmed',this)">Confirmed</button>
+          <button class="filter-btn" onclick="setSchedFilter('pending',this)">Pending</button>
+          <button class="filter-btn" onclick="setSchedFilter('checked_in',this)">Checked In</button>
+        </div>
+        <div class="schedule-grid" id="sched-grid"></div>
+      </div>
+
+      <!-- Per-room occupancy row (monthly view) -->
+      <div class="section-card" id="room-occ-card" style="margin-bottom:1.2rem">
+        <div class="section-card-header"><span class="section-card-title">Room Occupancy This Month</span></div>
+        <div id="room-occ-rows" style="padding:1rem"></div>
+      </div>
+
+      <!-- Blocked dates manager -->
+      <div class="section-card" style="margin-bottom:1.2rem">
+        <div class="section-card-header">
+          <span class="section-card-title">Blocked Dates</span>
+          <button class="section-card-action" onclick="openBlockModal()">+ Block Dates</button>
+        </div>
+        <table>
+          <thead><tr><th>Date From</th><th>Date To</th><th>Room</th><th>Reason</th><th></th></tr></thead>
+          <tbody id="blocked-list"><tr><td colspan="5" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Scheduled stays list -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <span class="section-card-title">All Scheduled Stays</span>
+          <div style="display:flex;gap:0.5rem">
+            <button class="filter-btn active" id="slist-filter-all" onclick="setSchedListFilter('all',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">All</button>
+            <button class="filter-btn" onclick="setSchedListFilter('confirmed',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">Confirmed</button>
+            <button class="filter-btn" onclick="setSchedListFilter('pending',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">Pending</button>
+            <button class="filter-btn" onclick="setSchedListFilter('checked_in',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">In</button>
+          </div>
+        </div>
+        <table><thead><tr><th>Ref</th><th>Guest</th><th>Room</th><th>Check In</th><th>Check Out</th><th>Nights</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="sched-list"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Block Dates Modal -->
+    <div class="overlay-backdrop" id="block-modal">
+      <div class="overlay-box">
+        <button class="overlay-close" onclick="closeModal('block-modal')">&#10005;</button>
+        <p class="overlay-title">Block Dates</p>
+        <p class="overlay-sub">Prevent bookings for selected dates</p>
+        <div class="form-grid" style="margin-bottom:1rem">
+          <div class="form-group"><label class="form-label">From</label><input class="form-input" id="bl-from" type="date"/></div>
+          <div class="form-group"><label class="form-label">To (inclusive)</label><input class="form-input" id="bl-to" type="date"/></div>
+        </div>
+        <div class="form-group" style="margin-bottom:1rem">
+          <label class="form-label">Room (leave blank to block all rooms)</label>
+          <select class="form-input" id="bl-room">
+            <option value="">All Rooms</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:1.2rem">
+          <label class="form-label">Reason</label>
+          <input class="form-input" id="bl-reason" placeholder="Maintenance, private event, holiday..."/>
+        </div>
+        <div style="display:flex;gap:0.6rem">
+          <button class="btn-save" style="flex:1" onclick="doBlockDates()">Block Dates</button>
+          <button class="btn-cancel" onclick="closeModal('block-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS -->
+    <div class="page" id="page-reservations">
+      <div style="display:flex;gap:0.7rem;margin-bottom:1.4rem;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <input class="form-input" id="res-search" style="width:195px" placeholder="Search guest..." oninput="loadReservations()"/>
+          <select class="form-input" id="res-status" style="width:135px" onchange="loadReservations()">
+            <option value="">All Status</option>
+            <option>confirmed</option><option>pending</option><option>checked_in</option><option>checked_out</option><option>cancelled</option>
+          </select>
+        </div>
+        <button class="btn-save" onclick="openManualReservationModal()">+ New Reservation</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><span class="section-card-title">All Reservations</span><button class="section-card-action" onclick="exportCSV()">Export CSV</button></div>
+        <table><thead><tr><th>Ref</th><th>Guest</th><th>Room</th><th>Check In</th><th>Check Out</th><th>Guests</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="reservations-body"><tr><td colspan="9" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <!-- ═══ CANCELLATIONS ═══ -->
+    <div class="page" id="page-cancellations">
+      <div style="display:flex;gap:0.6rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center">
+        <select class="form-input" id="cancel-status-filter" style="width:160px" onchange="loadCancellations()">
+          <option value="">All Requests</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn-save" style="padding:0.5rem 1.2rem;font-size:0.65rem" onclick="loadCancellations()">Refresh</button>
+      </div>
+      <div id="cancel-list" style="display:flex;flex-direction:column;gap:0.9rem">
+        <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Loading…</div>
+      </div>
+    </div>
+
+        <div class="page" id="page-rooms">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.1rem">
+        <button class="btn-save" onclick="openRoomModal()">+ Add Room</button>
+      </div>
+      <div class="rooms-manager" id="rooms-manager">
+        <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.28);grid-column:1/-1">Loading rooms...</div>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="page" id="page-pricing">
+      <div class="two-col">
+        <div class="section-card">
+          <div class="section-card-header"><span class="section-card-title">Base Rates</span></div>
+          <table><thead><tr><th>Room</th><th>Weekday</th><th>Weekend</th></tr></thead><tbody id="rates-body"></tbody></table>
+          <div class="form-actions"><button class="btn-save" onclick="saveRates()">Save Rates</button></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><span class="section-card-title">Seasonal Pricing</span><button class="section-card-action" onclick="toggleEl('add-season-form')">+ Add</button></div>
+          <div id="add-season-form" style="display:none;padding:1rem 1.5rem;border-bottom:1px solid var(--border)">
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Season Name</label><input class="form-input" id="s-name" placeholder="Holy Week"/></div>
+              <div class="form-group"><label class="form-label">Modifier %</label><input class="form-input" id="s-mod" type="number" placeholder="30"/></div>
+              <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="s-start" type="date"/></div>
+              <div class="form-group"><label class="form-label">End Date</label><input class="form-input" id="s-end" type="date"/></div>
+            </div>
+            <div style="display:flex;gap:0.5rem"><button class="btn-save" style="padding:0.5rem 1.2rem" onclick="addSeason()">Add</button><button class="btn-cancel" onclick="toggleEl('add-season-form')">Cancel</button></div>
+          </div>
+          <table><thead><tr><th>Season</th><th>Dates</th><th>Modifier</th><th></th></tr></thead><tbody id="seasons-body"></tbody></table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><span class="section-card-title">Promo Codes</span><button class="section-card-action" onclick="toggleEl('add-promo-form')">+ Create</button></div>
+        <div id="add-promo-form" style="display:none;padding:1rem 1.5rem;border-bottom:1px solid var(--border)">
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label">Code</label><input class="form-input" id="p-code" placeholder="LEDGE10" style="text-transform:uppercase"/></div>
+            <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="p-type"><option value="percent">Percent %</option><option value="fixed">Fixed PHP</option></select></div>
+            <div class="form-group"><label class="form-label">Value</label><input class="form-input" id="p-val" type="number" placeholder="10"/></div>
+            <div class="form-group"><label class="form-label">Valid Until</label><input class="form-input" id="p-until" type="date"/></div>
+            <div class="form-group"><label class="form-label">Max Uses</label><input class="form-input" id="p-uses" type="number" placeholder="Unlimited"/></div>
+          </div>
+          <div style="display:flex;gap:0.5rem"><button class="btn-save" style="padding:0.5rem 1.2rem" onclick="addPromo()">Create</button><button class="btn-cancel" onclick="toggleEl('add-promo-form')">Cancel</button></div>
+        </div>
+        <table><thead><tr><th>Code</th><th>Discount</th><th>Valid Until</th><th>Uses</th><th>Status</th><th></th></tr></thead><tbody id="promos-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- POLICIES -->
+    <div class="page" id="page-policies">
+      <div class="policies-grid">
+        <div class="policy-card"><div class="policy-header"><p class="policy-title">Cancellation Policy</p></div><div class="policy-body">
+          <div class="form-group"><label class="form-label">Free Cancellation (hours before)</label><input class="form-input" id="pol-cancel-hours" type="number" value="72"/></div>
+          <div class="form-group"><label class="form-label">Cancellation Fee</label><select class="form-input" id="pol-cancel-fee"><option>50% of total amount</option><option>100% of first night</option><option>No refund</option></select></div>
+          <div class="form-group"><label class="form-label">Policy Note</label><textarea class="form-input" id="pol-cancel-note">Cancellations made at least 72 hours before check-in are eligible for a full refund or rebooking.</textarea></div>
+          <button class="btn-save" onclick="savePolicies()">Save</button>
+        </div></div>
+        <div class="policy-card"><div class="policy-header"><p class="policy-title">Check-In & Check-Out</p></div><div class="policy-body">
+          <div class="form-group"><label class="form-label">Check-In Time</label><input class="form-input" id="pol-checkin-time" type="time" value="14:00"/></div>
+          <div class="form-group"><label class="form-label">Check-Out Time</label><input class="form-input" id="pol-checkout-time" type="time" value="12:00"/></div>
+          <div class="form-group"><label class="form-label">Early Check-In</label><select class="form-input" id="pol-early-ci"><option>Yes, with fee</option><option>Yes, free if available</option><option>No</option></select></div>
+          <button class="btn-save" onclick="savePolicies()">Save</button>
+        </div></div>
+        <div class="policy-card"><div class="policy-header"><p class="policy-title">House Rules</p></div><div class="policy-body">
+          <div class="form-group"><label class="form-label">Smoking</label><select class="form-input" id="pol-smoking"><option>Not allowed indoors</option><option>Allowed in designated areas</option></select></div>
+          <div class="form-group"><label class="form-label">Pets</label><select class="form-input" id="pol-pets"><option>Not allowed</option><option>Small pets allowed</option></select></div>
+          <div class="form-group"><label class="form-label">Quiet Hours</label><input class="form-input" id="pol-quiet" value="10:00 PM – 7:00 AM"/></div>
+          <div class="form-group"><label class="form-label">Additional Rules</label><textarea class="form-input" id="pol-rules">No outside visitors after 10PM. No cooking in rooms.</textarea></div>
+          <button class="btn-save" onclick="savePolicies()">Save</button>
+        </div></div>
+        <div class="policy-card"><div class="policy-header"><p class="policy-title">Payment & Deposits</p></div><div class="policy-body">
+          <div class="form-group"><label class="form-label">Deposit Required</label><select class="form-input" id="pol-deposit"><option>50% downpayment</option><option>Full payment upfront</option><option>No deposit</option></select></div>
+          <div class="form-group"><label class="form-label">Payment Note</label><textarea class="form-input" id="pol-pay-note">Send proof of payment via Facebook or Instagram DM after booking.</textarea></div>
+          <button class="btn-save" onclick="savePolicies()">Save</button>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- HOMEPAGE IMAGES -->
+    <div class="page" id="page-images">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem;flex-wrap:wrap;gap:0.8rem">
+        <p style="font-size:0.72rem;color:rgba(200,216,204,0.5);max-width:500px">Customize the images displayed on the homepage. Changes are saved automatically.</p>
+        <button class="btn-save" onclick="saveHomepageImages()">Save All Changes</button>
+      </div>
+      <div class="images-manager" id="images-manager">
+        <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.28);grid-column:1/-1">Loading image settings...</div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="metrics-grid" style="margin-bottom:1.4rem">
+        <div class="metric-card"><p class="metric-label">Revenue This Month</p><p class="metric-value" id="rpt-mrev"><span>PHP</span>—</p></div>
+        <div class="metric-card"><p class="metric-label">Stays This Month</p><p class="metric-value" id="rpt-mstays">—</p></div>
+        <div class="metric-card"><p class="metric-label">Avg Booking Value</p><p class="metric-value" id="rpt-avg"><span>PHP</span>—</p></div>
+        <div class="metric-card"><p class="metric-label">Cancellation Rate</p><p class="metric-value" id="rpt-cancel">—<span>%</span></p></div>
+      </div>
+      <div class="section-card" style="margin-bottom:1.4rem">
+        <div class="section-card-header"><span class="section-card-title">Monthly Revenue</span></div>
+        <div style="padding:1.4rem;position:relative;height:210px"><canvas id="rpt-chart"></canvas></div>
+      </div>
+      <div class="two-col">
+        <div class="section-card"><div class="section-card-header"><span class="section-card-title">Bookings by Room</span></div>
+          <table><thead><tr><th>Room</th><th>Bookings</th><th>Revenue</th><th>Nights</th></tr></thead><tbody id="occ-body"></tbody></table>
+        </div>
+        <div class="section-card"><div class="section-card-header"><span class="section-card-title">Booking Source</span></div>
+          <table><thead><tr><th>Source</th><th>Count</th><th>Revenue</th></tr></thead><tbody id="src-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- GUESTS -->
+    <div class="page" id="page-guests">
+      <div style="display:flex;gap:0.7rem;margin-bottom:1.4rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <input class="form-input" id="guest-search" style="width:230px" placeholder="Search name or email..." oninput="loadGuests()"/>
+        <div style="display:flex;gap:0.5rem">
+          <button class="filter-btn active" onclick="filterGuestsByPayment('all',this)">All</button>
+          <button class="filter-btn" onclick="filterGuestsByPayment('paid',this)">Paid</button>
+          <button class="filter-btn" onclick="filterGuestsByPayment('pending',this)">Pending</button>
+          <button class="filter-btn" onclick="filterGuestsByPayment('not-emailed',this)">Not Emailed</button>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <span class="section-card-title">Guest Directory</span>
+          <span style="font-size:0.6rem;color:rgba(200,216,204,0.35)">Click on a guest to view details and manage payment status</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Stays</th>
+              <th>Last Stay</th>
+              <th>Total Spent</th>
+              <th>Payment Status</th>
+              <th>Email Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="guests-body"><tr><td colspan="9" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="page" id="page-feedback">
+      <div style="display:flex;gap:0.7rem;margin-bottom:1.4rem;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div style="display:flex;gap:0.5rem">
+          <button class="filter-btn active" onclick="filterFeedback('all',this)">All Feedback</button>
+          <button class="filter-btn" onclick="filterFeedback('pending',this)">Pending Review</button>
+          <button class="filter-btn" onclick="filterFeedback('approved',this)">Approved</button>
+          <button class="filter-btn" onclick="filterFeedback('rejected',this)">Rejected</button>
+        </div>
+        <button class="btn-save" onclick="loadFeedback()">Refresh</button>
+      </div>
+      <div id="feedback-container">
+        <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.28)">Loading feedback...</div>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div class="page" id="page-staff">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:0.6rem">
+        <button class="btn-save" onclick="openModal('staff-modal')">+ Invite Staff</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><span class="section-card-title">Staff Accounts</span></div>
+        <table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last Active</th><th>Status</th><th></th></tr></thead>
+        <tbody id="staff-body"><tr><td colspan="6" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody></table>
+      </div>
+
+      <div class="section-card" style="margin-top:1.4rem">
+        <div class="section-card-header">
+          <span class="section-card-title">Activity Log</span>
+          <button class="section-card-action" onclick="loadAuditLog()">Refresh</button>
+        </div>
+        <table>
+          <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Note</th></tr></thead>
+          <tbody id="audit-body"><tr><td colspan="4" style="text-align:center;padding:1.5rem;color:rgba(200,216,204,0.28)">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="two-col">
+        <div class="section-card">
+          <div class="section-card-header"><span class="section-card-title">Property Info</span></div>
+          <div class="form-section">
+            <div class="form-grid">
+              <div class="form-group full"><label class="form-label">Property Name</label><input class="form-input" id="set-name" value="The Ledge Baguio"/></div>
+              <div class="form-group full"><label class="form-label">Tagline</label><input class="form-input" id="set-tagline" value="An overlooking bed &amp; breakfast in the heart of Baguio City, Benguet."/></div>
+              <div class="form-group full"><label class="form-label">Address</label><input class="form-input" id="set-address" value="Baguio City, Benguet, Philippines 2600"/></div>
+              <div class="form-group"><label class="form-label">Facebook</label><input class="form-input" id="set-fb" value="TheLedgeBaguio"/></div>
+              <div class="form-group"><label class="form-label">Instagram</label><input class="form-input" id="set-ig" value="theledgebaguio__"/></div>
+              <div class="form-group"><label class="form-label">TikTok</label><input class="form-input" id="set-tiktok" value="@theledgebaguio"/></div>
+              <div class="form-group"><label class="form-label">Contact Email</label><input class="form-input" id="set-email" value="hello@theledgebaguio.ph"/></div>
+            </div>
+          </div>
+          <div class="form-actions"><button class="btn-save" onclick="saveSettings()">Save</button></div>
+        </div>
+        <div>
+          <div class="section-card" style="margin-bottom:1.4rem">
+            <div class="section-card-header"><span class="section-card-title">Notifications</span></div>
+            <div style="padding:0 1.5rem 1rem">
+              <div class="setting-row"><div class="setting-info"><p>Email on new reservation</p></div><button class="toggle on" id="notif-new" onclick="this.classList.toggle('on')"></button></div>
+              <div class="setting-row"><div class="setting-info"><p>Email on cancellation</p></div><button class="toggle on" id="notif-cancel" onclick="this.classList.toggle('on')"></button></div>
+              <div class="setting-row"><div class="setting-info"><p>Guest confirmation email</p></div><button class="toggle on" id="notif-confirm" onclick="this.classList.toggle('on')"></button></div>
+              <div class="setting-row"><div class="setting-info"><p>Reminder 24hrs before</p></div><button class="toggle on" id="notif-reminder" onclick="this.classList.toggle('on')"></button></div>
+              <div class="setting-row"><div class="setting-info"><p>Weekly summary report</p></div><button class="toggle" id="notif-weekly" onclick="this.classList.toggle('on')"></button></div>
+            </div>
+            <div class="form-actions"><button class="btn-save" onclick="saveSettings()">Save</button></div>
+          </div>
+          <div class="section-card">
+            <div class="section-card-header"><span class="section-card-title">Tax & Fees</span></div>
+            <div class="form-section">
+              <div class="form-grid">
+                <div class="form-group"><label class="form-label">VAT (%)</label><input class="form-input" id="set-vat" type="number" value="12"/></div>
+                <div class="form-group"><label class="form-label">Tourism Fee/night (PHP)</label><input class="form-input" id="set-tourism" type="number" value="50"/></div>
+              </div>
+            </div>
+            <div class="form-actions"><button class="btn-save" onclick="saveSettings()">Save</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     HONESTY STORE PAGE (injected into admin panel)
+════════════════════════════════════════════════════════ -->
+<style>
+/* Honesty Store admin styles */
+.honesty-card{background:var(--pine);border:1px solid var(--border);padding:1.2rem;margin-bottom:0.9rem;transition:border-color 0.2s}
+.honesty-card:hover{border-color:var(--border-md)}
+.honesty-card.pending{border-left:3px solid var(--warning)}
+.honesty-card.verified{border-left:3px solid var(--success)}
+.honesty-card.disputed{border-left:3px solid var(--danger)}
+.honesty-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem}
+.honesty-guest{font-family:var(--font-serif);font-size:1rem;font-weight:300}
+.honesty-email{font-size:0.62rem;color:rgba(200,216,204,0.4)}
+.honesty-total{font-family:var(--font-serif);font-size:1.1rem;color:var(--gold)}
+.honesty-items-list{margin-bottom:0.8rem}
+.honesty-item-r{display:flex;justify-content:space-between;font-size:0.7rem;padding:0.25rem 0;border-bottom:1px solid var(--border);color:rgba(245,240,232,0.7)}
+.honesty-item-r:last-child{border-bottom:none}
+.honesty-note-text{font-size:0.68rem;color:rgba(200,216,204,0.45);font-style:italic;margin-bottom:0.8rem}
+.honesty-actions{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
+.btn-verify{background:rgba(76,175,128,0.12);border:1px solid rgba(76,175,128,0.25);color:#6fcca0;font-size:0.6rem;padding:0.3rem 0.9rem;cursor:pointer;font-family:var(--font-sans);letter-spacing:0.08em;transition:all 0.2s}
+.btn-verify:hover{background:rgba(76,175,128,0.22)}
+.btn-dispute{background:rgba(192,89,74,0.1);border:1px solid rgba(192,89,74,0.22);color:#e08070;font-size:0.6rem;padding:0.3rem 0.9rem;cursor:pointer;font-family:var(--font-sans);letter-spacing:0.08em;transition:all 0.2s}
+.btn-dispute:hover{background:rgba(192,89,74,0.2)}
+.store-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.4rem}
+@media(max-width:900px){.store-metrics{grid-template-columns:1fr 1fr}}
+</style>
+
+<!-- The actual page div lives inside .content, injected via JS trick:
+     Since admin.html uses a static <div class="content">, we add this page via a hidden
+     template that gets moved on DOMContentLoaded. Alternatively, just paste it inside
+     the content div. For simplicity it is placed directly here inline: -->
+<script>
+// Move page-store into the .content div on load
+document.addEventListener('DOMContentLoaded', () => {
+  const storePageTemplate = document.getElementById('page-store-template');
+  const contentDiv        = document.querySelector('.content');
+  if (storePageTemplate && contentDiv) {
+    contentDiv.appendChild(storePageTemplate);
+    storePageTemplate.id = 'page-store';
+  }
+});
+</script>
+
+<div id="page-store-template" class="page" style="display:none">
+  <div class="store-metrics">
+    <div class="metric-card"><p class="metric-label">Today's Orders</p><p class="metric-value" id="sm-today-orders">—</p></div>
+    <div class="metric-card"><p class="metric-label">Today's Revenue</p><p class="metric-value" id="sm-today-rev"><span>PHP</span>—</p></div>
+    <div class="metric-card"><p class="metric-label">Total Orders</p><p class="metric-value" id="sm-total-orders">—</p></div>
+    <div class="metric-card"><p class="metric-label">Pending Honesty Logs</p><p class="metric-value" id="sm-pending-logs">—</p></div>
+  </div>
+
+  <div style="grid-column:1/-1;margin-bottom:1.4rem">
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-card-title">Honesty Log — Guest Self-Reports</span>
+        <div style="display:flex;gap:0.5rem">
+          <button class="filter-btn active" onclick="filterHonestyAdmin('all',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">All</button>
+          <button class="filter-btn" onclick="filterHonestyAdmin('pending',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">Pending</button>
+          <button class="filter-btn" onclick="filterHonestyAdmin('verified',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">Verified</button>
+          <button class="filter-btn" onclick="filterHonestyAdmin('disputed',this)" style="font-size:0.58rem;padding:0.25rem 0.7rem">Disputed</button>
+          <button class="section-card-action" onclick="loadAdminStore()">Refresh</button>
+        </div>
+      </div>
+      <div id="honesty-admin-list" style="padding:1rem">
+        <div style="text-align:center;padding:2rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="section-card">
+      <div class="section-card-header"><span class="section-card-title">Best Sellers</span></div>
+      <table><thead><tr><th>Product</th><th>Units Sold</th><th>Revenue</th></tr></thead>
+      <tbody id="store-bestsellers"><tr><td colspan="3" style="text-align:center;padding:1rem;color:rgba(200,216,204,0.25)">Loading…</td></tr></tbody></table>
+    </div>
+    <div class="section-card">
+      <div class="section-card-header"><span class="section-card-title">Low Stock Alert</span></div>
+      <table><thead><tr><th>Product</th><th>Category</th><th>Stock</th></tr></thead>
+      <tbody id="store-lowstock"><tr><td colspan="3" style="text-align:center;padding:1rem;color:rgba(200,216,204,0.25)">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+</div>
+<div class="overlay-backdrop" id="booking-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('booking-modal')">&#10005;</button>
+    <p class="overlay-title">Booking Detail</p>
+    <p class="overlay-sub" id="bm-ref">—</p>
+    <div id="bm-body"></div>
+    <div style="display:flex;gap:0.6rem;margin-top:1.2rem;flex-wrap:wrap">
+      <select class="status-select" id="bm-status"></select>
+      <button class="btn-save" style="padding:0.5rem 1.2rem" onclick="saveStatus()">Update</button>
+      <button class="btn-save" style="padding:0.5rem 1.2rem;background:rgba(197,162,85,0.15);color:var(--gold);border:1px solid rgba(197,162,85,0.3)" onclick="openRebookPanel()">Rebook</button>
+      <button class="btn-cancel" onclick="closeModal('booking-modal')">Close</button>
+    </div>
+    <div id="rebook-panel" style="display:none;margin-top:1.2rem;padding:1.2rem;background:rgba(197,162,85,0.05);border:1px solid rgba(197,162,85,0.2)">
+      <p style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem">Move to New Dates</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.8rem">
+        <div><label class="form-label">New Check-In</label><input class="form-input" type="date" id="rb-checkin" onchange="previewRebookPrice()"></div>
+        <div><label class="form-label">New Check-Out</label><input class="form-input" type="date" id="rb-checkout" onchange="previewRebookPrice()"></div>
+      </div>
+      <div style="margin-bottom:0.8rem"><label class="form-label">Admin Note (optional)</label><input class="form-input" id="rb-note" placeholder="e.g. Guest requested change due to travel plans"></div>
+      <div id="rb-price-preview" style="font-size:0.72rem;color:rgba(200,216,204,0.5);margin-bottom:0.8rem;min-height:1.2em"></div>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn-save" style="padding:0.5rem 1.2rem" onclick="confirmRebook()">Confirm Rebook</button>
+        <button class="btn-cancel" onclick="closeRebookPanel()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROOM MODAL -->
+<div class="overlay-backdrop" id="room-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('room-modal')">&#10005;</button>
+    <p class="overlay-title" id="rm-modal-title">Add Room</p>
+    <p class="overlay-sub">Fill in room details then save</p>
+    <input type="hidden" id="rm-id"/>
+    <div class="form-group" style="margin-bottom:0.9rem"><label class="form-label">Room Name</label><input class="form-input" id="rm-name" placeholder="The Mist Room"/></div>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">Base Price (PHP)</label><input class="form-input" id="rm-price" type="number" placeholder="1500"/></div>
+      <div class="form-group"><label class="form-label">Max Occupancy</label><input class="form-input" id="rm-occ" type="number" placeholder="2"/></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">Weekday Price</label><input class="form-input" id="rm-weekday" type="number" placeholder="1500"/></div>
+      <div class="form-group"><label class="form-label">Weekend Price</label><input class="form-input" id="rm-weekend" type="number" placeholder="1800"/></div>
+    </div>
+    <div class="form-group" style="margin-bottom:0.9rem"><label class="form-label">Bed Type</label><input class="form-input" id="rm-bed" placeholder="Queen Bed"/></div>
+    <div class="form-group" style="margin-bottom:1.2rem"><label class="form-label">Description</label><textarea class="form-input" id="rm-desc" rows="3"></textarea></div>
+    <div style="display:flex;gap:0.6rem">
+      <button class="btn-save" style="flex:1" onclick="saveRoomModal()">Save Room</button>
+      <button class="btn-cancel" onclick="closeModal('room-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF MODAL -->
+<div class="overlay-backdrop" id="staff-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('staff-modal')">&#10005;</button>
+    <p class="overlay-title">Invite Staff</p>
+    <p class="overlay-sub">Create a new staff account</p>
+    <div class="form-group" style="margin-bottom:0.9rem"><label class="form-label">Full Name</label><input class="form-input" id="sf-name" placeholder="Juan dela Cruz"/></div>
+    <div class="form-group" style="margin-bottom:0.9rem"><label class="form-label">Email</label><input class="form-input" id="sf-email" type="email"/></div>
+    <div class="form-group" style="margin-bottom:0.9rem"><label class="form-label">Password</label><input class="form-input" id="sf-pass" type="password" placeholder="Min 8 characters"/></div>
+    <div class="form-group" style="margin-bottom:1.2rem"><label class="form-label">Role</label>
+      <select class="form-input" id="sf-role"><option value="front_desk">Front Desk</option><option value="store_staff">Store Staff</option><option value="manager">Manager</option><option value="admin">Admin</option></select>
+    </div>
+    <div style="display:flex;gap:0.6rem">
+      <button class="btn-save" style="flex:1" onclick="doCreateStaff()">Create Account</button>
+      <button class="btn-cancel" onclick="closeModal('staff-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST DETAIL MODAL -->
+<div class="overlay-backdrop" id="guest-detail-modal">
+  <div class="overlay-box" style="width:min(560px,100%)">
+    <button class="overlay-close" onclick="closeModal('guest-detail-modal')">&#10005;</button>
+    <input type="hidden" id="gd-id"/>
+    <p class="overlay-title" id="gd-name">Guest Name</p>
+    <p class="overlay-sub" id="gd-email">email@example.com</p>
+    <div style="display:flex;gap:0.8rem;margin-bottom:1.2rem;flex-wrap:wrap">
+      <span style="font-size:0.72rem;color:rgba(200,216,204,0.5)" id="gd-phone">—</span>
+    </div>
+    <div style="margin-bottom:1rem">
+      <label class="form-label">Payment Status</label>
+      <select class="status-select" id="gd-payment-status" style="width:100%;margin-top:0.3rem">
+        <option value="pending">Pending</option>
+        <option value="partial">Partial Payment</option>
+        <option value="paid">Paid in Full</option>
+      </select>
+    </div>
+    <div style="margin-bottom:1rem">
+      <label class="form-label">Email Confirmation Status</label>
+      <div style="margin-top:0.5rem">
+        <button class="toggle" id="gd-email-sent" onclick="this.classList.toggle('on')"></button>
+        <span style="font-size:0.65rem;color:rgba(200,216,204,0.5);margin-left:0.5rem">Confirmation email sent</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label class="form-label">Notes (internal)</label>
+      <textarea class="form-input" id="gd-notes" rows="2" placeholder="Internal notes about this guest..."></textarea>
+    </div>
+    <div style="margin-bottom:1.2rem">
+      <p style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8;margin-bottom:0.8rem">Booking History</p>
+      <table style="width:100%">
+        <thead><tr><th>Ref</th><th>Room</th><th>Check In</th><th>Check Out</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody id="gd-bookings"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:0.6rem">
+      <button class="btn-save" onclick="saveGuestDetails()">Save Changes</button>
+      <button class="btn-cancel" onclick="closeModal('guest-detail-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANUAL RESERVATION MODAL -->
+<div class="overlay-backdrop" id="manual-res-modal">
+  <div class="overlay-box" style="width:min(520px,100%)">
+    <button class="overlay-close" onclick="closeModal('manual-res-modal')">&#10005;</button>
+    <p class="overlay-title">New Reservation</p>
+    <p class="overlay-sub">Create a booking for walk-in, phone, or Facebook inquiry</p>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="mr-firstname" placeholder="Juan"/></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="mr-lastname" placeholder="dela Cruz"/></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="mr-email" type="email" placeholder="juan@email.com"/></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="mr-phone" placeholder="+63 9XX XXX XXXX"/></div>
+    </div>
+    <div class="form-group" style="margin-bottom:0.9rem">
+      <label class="form-label">Room</label>
+      <select class="form-input" id="mr-room"></select>
+    </div>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">Check In</label><input class="form-input" id="mr-checkin" type="date"/></div>
+      <div class="form-group"><label class="form-label">Check Out</label><input class="form-input" id="mr-checkout" type="date"/></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:0.9rem">
+      <div class="form-group"><label class="form-label">Guests</label>
+        <select class="form-input" id="mr-guests"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Source</label>
+        <select class="form-input" id="mr-source"><option value="walk-in">Walk-in</option><option value="phone">Phone</option><option value="facebook">Facebook</option><option value="instagram">Instagram</option><option value="website">Website</option></select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0.9rem">
+      <label class="form-label">Special Requests</label>
+      <input class="form-input" id="mr-special" placeholder="Early check-in, anniversary setup..."/>
+    </div>
+    <div class="form-group" style="margin-bottom:1.2rem">
+      <label class="form-label">Promo Code (optional)</label>
+      <input class="form-input" id="mr-promo" placeholder="LEDGE10" style="text-transform:uppercase"/>
+    </div>
+    <div style="display:flex;gap:0.6rem">
+      <button class="btn-save" id="mr-submit-btn" style="flex:1" onclick="submitManualReservation()">Create Reservation</button>
+      <button class="btn-cancel" onclick="closeModal('manual-res-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-upload" accept="image/jpeg,image/png,image/webp" multiple/>
+
+<script src="/public/js/api.js"></script>
+<script src="/public/js/admin.js"></script>
+</body>
+</html>

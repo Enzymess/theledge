@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "name": "Enzo Sebastian",
+    "email": "enzosebastian0719@gmail.com",
+    "google_id": null,
+    "password_hash": "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewFBgxuiCcFt6mMW",
+    "role": "admin",
+    "is_active": true,
+    "auth_method": "password",
+    "last_login": null,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+]

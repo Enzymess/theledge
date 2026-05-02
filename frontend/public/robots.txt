@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /store-staff
+Disallow: /api/
+
+Sitemap: https://www.theledgebaguio.com/sitemap.xml

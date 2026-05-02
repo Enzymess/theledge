@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "first_name": "Maria",
+    "last_name": "Santos",
+    "email": "maria.santos@gmail.com",
+    "phone": "09171234567",
+    "notes": "Prefers high floor. Returning guest.",
+    "payment_status": "paid",
+    "email_sent": true,
+    "created_at": "2026-01-10T08:00:00.000Z",
+    "updated_at": "2026-01-10T08:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "first_name": "Jose",
+    "last_name": "Reyes",
+    "email": "jose.reyes@yahoo.com",
+    "phone": "09189876543",
+    "notes": "",
+    "payment_status": "pending",
+    "email_sent": false,
+    "created_at": "2026-02-14T09:30:00.000Z",
+    "updated_at": "2026-02-14T09:30:00.000Z"
+  },
+  {
+    "id": 3,
+    "first_name": "Ana",
+    "last_name": "Cruz",
+    "email": "ana.cruz@gmail.com",
+    "phone": "09201112222",
+    "notes": "Anniversary trip. Needs rose setup.",
+    "payment_status": "paid",
+    "email_sent": true,
+    "created_at": "2026-02-20T10:00:00.000Z",
+    "updated_at": "2026-02-20T10:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "first_name": "Ramon",
+    "last_name": "Dela Torre",
+    "email": "ramon.delatorre@outlook.com",
+    "phone": "09153334444",
+    "notes": "",
+    "payment_status": "partial",
+    "email_sent": true,
+    "created_at": "2026-03-01T14:00:00.000Z",
+    "updated_at": "2026-03-01T14:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "first_name": "Liza",
+    "last_name": "Flores",
+    "email": "liza.flores@gmail.com",
+    "phone": "09275556666",
+    "notes": "Group of friends. First time in Baguio.",
+    "payment_status": "pending",
+    "email_sent": false,
+    "created_at": "2026-03-15T11:00:00.000Z",
+    "updated_at": "2026-03-15T11:00:00.000Z"
+  }
+]

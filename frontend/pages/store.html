@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Honesty Store — The Ledge Baguio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── Design tokens (match admin panel) ── */
+:root{
+  --pine:#1a2e1a;--pine-dark:#0d1a0d;--pine-mid:#152515;
+  --gold:#c5a255;--gold-dark:#a8893f;--gold-light:#d4b570;
+  --cream:#f5f0e8;--mist:#c8d8cc;
+  --border:rgba(200,216,204,0.10);--border-md:rgba(200,216,204,0.18);
+  --success:#4caf80;--warning:#c5a255;--danger:#c0594a;--info:#5a8fc5;
+  --font-serif:'Cormorant Garamond',serif;--font-sans:'Jost',sans-serif;
+  --sidebar-w:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--pine-dark);color:var(--cream);min-height:100vh;display:flex}
+a{text-decoration:none;color:inherit}
+button{border:none;cursor:pointer;font-family:var(--font-sans)}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;position:sticky;top:0;background:var(--pine);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;z-index:50}
+.sidebar-logo{padding:1.6rem 1.4rem 1.2rem;border-bottom:1px solid var(--border)}
+.sidebar-logo p{font-family:var(--font-serif);font-size:1.2rem;font-weight:300;letter-spacing:0.1em}
+.sidebar-logo p span{color:var(--gold);font-style:italic}
+.sidebar-logo small{font-size:0.55rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(200,216,204,0.35);display:block;margin-top:0.2rem}
+.nav-section{padding:1rem 0 0.4rem}
+.nav-label{font-size:0.5rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(200,216,204,0.3);padding:0 1.4rem;margin-bottom:0.5rem}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.6rem 1.4rem;font-size:0.7rem;letter-spacing:0.08em;color:rgba(245,240,232,0.55);cursor:pointer;transition:all 0.2s;border-left:2px solid transparent}
+.nav-item:hover{color:var(--cream);background:rgba(255,255,255,0.05)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(197,162,85,0.06)}
+.nav-icon{width:16px;text-align:center;font-size:0.8rem;opacity:0.6}
+.sidebar-bottom{margin-top:auto;padding:1rem 1.4rem;border-top:1px solid var(--border)}
+.staff-badge{display:flex;align-items:center;gap:0.7rem}
+.staff-avatar{width:32px;height:32px;background:rgba(197,162,85,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--gold);font-weight:500;flex-shrink:0}
+.staff-info p{font-size:0.68rem;color:var(--cream)}
+.staff-info small{font-size:0.56rem;color:rgba(200,216,204,0.35);letter-spacing:0.06em}
+
+/* ── Main layout ── */
+.main{flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden}
+.topbar{height:54px;background:var(--pine);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;flex-shrink:0}
+.topbar-title{font-family:var(--font-serif);font-size:1.15rem;font-weight:300}
+.topbar-title em{color:var(--gold);font-style:italic}
+.content{padding:1.8rem;flex:1;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+
+/* ── POS layout ── */
+.pos-layout{display:grid;grid-template-columns:1fr 380px;gap:1.4rem;height:calc(100vh - 110px)}
+.pos-products-panel{overflow-y:auto;padding-right:4px}
+.pos-cart-panel{display:flex;flex-direction:column;background:var(--pine);border:1px solid var(--border);overflow:hidden}
+
+/* ── Category tabs ── */
+.cat-tabs{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.cat-tab{background:transparent;border:1px solid var(--border-md);color:rgba(200,216,204,0.45);font-size:0.62rem;letter-spacing:0.1em;padding:0.3rem 0.85rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.cat-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(197,162,85,0.08)}
+
+/* ── Product grid ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.85rem}
+.prod-card{background:var(--pine);border:1px solid var(--border);padding:1rem;cursor:pointer;transition:all 0.18s;position:relative;user-select:none}
+.prod-card:hover{border-color:var(--gold);background:rgba(197,162,85,0.04)}
+.prod-card.out-of-stock{opacity:0.4;cursor:not-allowed}
+.prod-card.out-of-stock:hover{border-color:var(--border);background:var(--pine)}
+.prod-name{font-size:0.75rem;margin-bottom:0.25rem;line-height:1.3}
+.prod-category{font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,216,204,0.35);margin-bottom:0.5rem}
+.prod-price{font-family:var(--font-serif);font-size:1.05rem;font-weight:300;color:var(--gold)}
+.prod-stock{font-size:0.58rem;color:rgba(200,216,204,0.35);margin-top:0.2rem}
+.prod-card .add-indicator{position:absolute;top:0.5rem;right:0.5rem;width:20px;height:20px;background:var(--gold);color:var(--pine);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;opacity:0;transition:opacity 0.15s}
+.prod-card:hover .add-indicator{opacity:1}
+
+/* ── Cart panel ── */
+.cart-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-title{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8}
+.cart-count{font-size:0.6rem;color:rgba(200,216,204,0.4)}
+.cart-customer{padding:0.8rem 1.2rem;border-bottom:1px solid var(--border)}
+.cart-customer input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.5rem 0.7rem;outline:none;transition:border-color 0.2s}
+.cart-customer input:focus{border-color:rgba(197,162,85,0.4)}
+.cart-customer input::placeholder{color:rgba(200,216,204,0.2)}
+.cart-items{flex:1;overflow-y:auto;padding:0.8rem 1.2rem}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(200,216,204,0.25);font-size:0.72rem;gap:0.5rem;text-align:center}
+.cart-empty-icon{font-size:2.5rem;opacity:0.3}
+.cart-item{display:flex;align-items:center;gap:0.6rem;padding:0.65rem 0;border-bottom:1px solid var(--border)}
+.cart-item:last-child{border-bottom:none}
+.cart-item-name{flex:1;font-size:0.72rem;line-height:1.3}
+.cart-item-cat{font-size:0.55rem;color:rgba(200,216,204,0.35)}
+.cart-qty-ctrl{display:flex;align-items:center;gap:0.3rem}
+.qty-btn{width:22px;height:22px;background:rgba(255,255,255,0.06);border:1px solid var(--border-md);color:var(--cream);font-size:0.75rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.qty-btn:hover{border-color:var(--gold);color:var(--gold)}
+.qty-val{width:28px;text-align:center;font-size:0.78rem}
+.cart-item-price{font-size:0.72rem;color:var(--gold);min-width:60px;text-align:right;flex-shrink:0}
+.cart-item-del{color:rgba(200,216,204,0.2);cursor:pointer;font-size:0.75rem;margin-left:0.2rem;transition:color 0.15s;flex-shrink:0}
+.cart-item-del:hover{color:var(--danger)}
+
+/* ── Cart footer ── */
+.cart-footer{border-top:1px solid var(--border);padding:1rem 1.2rem}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem}
+.cart-total-label{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.4)}
+.cart-total-val{font-family:var(--font-serif);font-size:1.5rem;font-weight:300;color:var(--gold)}
+.payment-method-row{display:flex;gap:0.5rem;margin-bottom:0.8rem}
+.pay-btn{flex:1;padding:0.55rem;border:1px solid var(--border-md);background:transparent;color:rgba(200,216,204,0.5);font-size:0.62rem;letter-spacing:0.1em;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.pay-btn.active{background:rgba(197,162,85,0.12);border-color:var(--gold);color:var(--gold)}
+.gcash-select-wrap{margin-bottom:0.8rem}
+.gcash-select-wrap select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.5rem 0.7rem;outline:none}
+.gcash-select-wrap select option{background:var(--pine-dark)}
+.btn-checkout{width:100%;background:var(--gold);color:var(--pine);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.8rem;font-family:var(--font-sans);transition:background 0.2s}
+.btn-checkout:hover{background:var(--gold-dark)}
+.btn-checkout:disabled{opacity:0.4;cursor:not-allowed}
+.btn-clear{width:100%;background:transparent;color:rgba(200,216,204,0.3);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem;font-family:var(--font-sans);border:1px solid var(--border);margin-top:0.5rem;transition:all 0.2s}
+.btn-clear:hover{color:var(--danger);border-color:rgba(192,89,74,0.3)}
+
+/* ── QR Modal ── */
+.overlay-backdrop{display:none;position:fixed;inset:0;background:rgba(10,18,10,0.9);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:1.5rem}
+.overlay-backdrop.open{display:flex}
+.overlay-box{background:var(--pine);border:1px solid var(--border-md);width:min(440px,100%);max-height:90vh;overflow-y:auto;padding:2rem;position:relative;animation:fadeUp 0.25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.overlay-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(200,216,204,0.35);font-size:1.1rem;cursor:pointer;transition:color 0.2s}
+.overlay-close:hover{color:var(--cream)}
+.overlay-title{font-family:var(--font-serif);font-size:1.5rem;font-weight:300;margin-bottom:0.2rem}
+.overlay-sub{font-size:0.63rem;color:rgba(200,216,204,0.32);margin-bottom:1.5rem;letter-spacing:0.05em}
+
+.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem;margin-bottom:1.5rem}
+.qr-code-box{width:200px;height:200px;background:#fff;display:flex;align-items:center;justify-content:center;border-radius:4px;overflow:hidden}
+.qr-code-box img{width:100%;height:100%;object-fit:contain}
+.qr-amount{font-family:var(--font-serif);font-size:2rem;font-weight:300;color:var(--gold)}
+.qr-to{font-size:0.72rem;color:rgba(200,216,204,0.5);text-align:center}
+.qr-to strong{color:var(--cream);display:block;font-size:0.85rem;margin-top:0.2rem}
+.qr-to span{font-size:0.78rem;color:var(--gold);letter-spacing:0.06em}
+
+.order-items-summary{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:0.8rem 1rem;margin-bottom:1.2rem;max-height:140px;overflow-y:auto}
+.order-item-row{display:flex;justify-content:space-between;font-size:0.7rem;padding:0.25rem 0;border-bottom:1px solid var(--border);color:rgba(245,240,232,0.7)}
+.order-item-row:last-child{border-bottom:none}
+
+.btn-confirm-pay{width:100%;background:var(--success);color:#fff;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.85rem;font-family:var(--font-sans);margin-bottom:0.5rem;transition:background 0.2s}
+.btn-confirm-pay:hover{background:#3d9e6a}
+.btn-cancel-order{width:100%;background:transparent;color:rgba(200,216,204,0.35);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.6rem;font-family:var(--font-sans);border:1px solid var(--border);transition:all 0.2s}
+.btn-cancel-order:hover{color:var(--danger);border-color:rgba(192,89,74,0.3)}
+
+/* ── Receipt ── */
+.receipt-box{background:rgba(255,255,255,0.03);border:1px solid rgba(76,175,128,0.3);padding:1.2rem;text-align:center;margin-bottom:1.2rem}
+.receipt-icon{font-size:2.5rem;color:var(--success);margin-bottom:0.5rem}
+.receipt-title{font-family:var(--font-serif);font-size:1.3rem;font-weight:300;color:var(--success);margin-bottom:0.3rem}
+.receipt-sub{font-size:0.7rem;color:rgba(200,216,204,0.5)}
+
+/* ── Section card ── */
+.section-card{background:var(--pine);border:1px solid var(--border);margin-bottom:1.4rem}
+.section-card-header{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.4rem;border-bottom:1px solid var(--border)}
+.section-card-title{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8}
+.section-card-action{background:none;border:1px solid var(--border-md);color:rgba(200,216,204,0.4);font-size:0.58rem;padding:0.28rem 0.75rem;cursor:pointer;font-family:var(--font-sans);letter-spacing:0.08em;transition:all 0.2s}
+.section-card-action:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── Table ── */
+table{width:100%;border-collapse:collapse;font-size:0.72rem}
+th{font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,216,204,0.35);padding:0.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);font-weight:400}
+td{padding:0.7rem 1rem;border-bottom:1px solid var(--border);color:rgba(245,240,232,0.8)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+
+/* ── Inventory ── */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;padding:1.2rem}
+.inv-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:1rem;transition:border-color 0.2s}
+.inv-card:hover{border-color:var(--border-md)}
+.inv-card.low-stock{border-left:3px solid var(--danger)}
+.inv-name{font-size:0.75rem;margin-bottom:0.2rem}
+.inv-cat{font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,216,204,0.35);margin-bottom:0.5rem}
+.inv-stock-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
+.inv-stock-num{font-family:var(--font-serif);font-size:1.3rem;font-weight:300;color:var(--cream)}
+.inv-stock-num.low{color:var(--danger)}
+.inv-price{font-size:0.65rem;color:var(--gold)}
+.inv-actions{display:flex;gap:0.4rem;margin-top:0.7rem}
+.inv-btn{flex:1;padding:0.3rem 0;border:1px solid var(--border-md);background:transparent;color:rgba(200,216,204,0.45);font-size:0.58rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.inv-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── Form ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-group{display:flex;flex-direction:column;gap:0.35rem}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,216,204,0.4)}
+.form-input{background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.8rem;padding:0.6rem 0.85rem;outline:none;transition:border-color 0.2s;width:100%}
+.form-input:focus{border-color:rgba(197,162,85,0.5)}
+.form-input::placeholder{color:rgba(200,216,204,0.2)}
+select.form-input option{background:var(--pine-dark)}
+.btn-save{background:var(--gold);color:var(--pine);font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.65rem 1.8rem;border:none;cursor:pointer;font-family:var(--font-sans);transition:background 0.2s}
+.btn-save:hover{background:var(--gold-dark)}
+.btn-del{background:transparent;color:rgba(192,89,74,0.6);font-size:0.62rem;letter-spacing:0.1em;padding:0.5rem 1rem;border:1px solid rgba(192,89,74,0.25);cursor:pointer;font-family:var(--font-sans);transition:all 0.2s}
+.btn-del:hover{color:var(--danger);border-color:var(--danger)}
+
+/* ── Badge ── */
+.badge{display:inline-block;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.18rem 0.6rem;border-radius:2px}
+.badge-completed{background:rgba(76,175,128,0.12);color:var(--success);border:1px solid rgba(76,175,128,0.2)}
+.badge-pending{background:rgba(197,162,85,0.12);color:var(--warning);border:1px solid rgba(197,162,85,0.2)}
+.badge-voided{background:rgba(192,89,74,0.12);color:var(--danger);border:1px solid rgba(192,89,74,0.2)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(16px);background:var(--pine-dark);color:var(--gold);padding:0.85rem 1.8rem;font-size:0.72rem;letter-spacing:0.05em;border:1px solid rgba(197,162,85,0.25);opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Metrics ── */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.4rem}
+.metric-card{background:var(--pine);border:1px solid var(--border);padding:1.2rem 1.4rem}
+.metric-label{font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,216,204,0.38);margin-bottom:0.6rem}
+.metric-value{font-family:var(--font-serif);font-size:1.7rem;font-weight:300;color:var(--cream);line-height:1}
+.metric-value span{font-size:0.75rem;font-family:var(--font-sans);color:rgba(200,216,204,0.4);margin-right:0.2rem}
+
+/* ── Stock badge ── */
+.stock-ok{color:var(--success)}
+.stock-low{color:var(--warning)}
+.stock-out{color:var(--danger)}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .pos-layout{grid-template-columns:1fr;height:auto}
+  .pos-cart-panel{position:fixed;bottom:0;left:0;right:0;height:auto;max-height:60vh;z-index:100}
+  .metrics-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <p>The <span>Ledge</span></p>
+    <small>Honesty Store</small>
+  </div>
+  <div class="nav-section">
+    <p class="nav-label">Store</p>
+    <div class="nav-item active" onclick="showPage('pos',this)"><span class="nav-icon">&#9635;</span> Point of Sale</div>
+    <div class="nav-item" onclick="showPage('inventory',this)"><span class="nav-icon">&#9633;</span> Inventory</div>
+    <div class="nav-item" onclick="showPage('orders',this)"><span class="nav-icon">&#9638;</span> Order History</div>
+  </div>
+  <div class="nav-section">
+    <p class="nav-label">Config</p>
+    <div class="nav-item" onclick="showPage('gcash',this)"><span class="nav-icon">&#9672;</span> GCash Accounts</div>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="staff-badge">
+      <div class="staff-avatar" id="staff-av">S</div>
+      <div class="staff-info"><p id="staff-name">Staff</p><small id="staff-role">store_staff</small></div>
+    </div>
+    <button onclick="logout()" style="margin-top:0.8rem;width:100%;background:transparent;border:1px solid var(--border);color:rgba(200,216,204,0.35);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.45rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='rgba(200,216,204,0.35)'">Sign Out</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Point <em>of Sale</em></div>
+    <div style="font-size:0.62rem;color:rgba(200,216,204,0.35)" id="topbar-date"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ POS ═══ -->
+    <div class="page active" id="page-pos">
+      <div class="pos-layout">
+
+        <!-- Products panel -->
+        <div class="pos-products-panel">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.6rem">
+            <div class="cat-tabs" id="cat-tabs"></div>
+            <input id="prod-search" placeholder="Search products..." style="background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.45rem 0.8rem;outline:none;width:180px" oninput="filterProducts()">
+          </div>
+          <div class="prod-grid" id="prod-grid">
+            <div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Loading products…</div>
+          </div>
+        </div>
+
+        <!-- Cart panel -->
+        <div class="pos-cart-panel">
+          <div class="cart-header">
+            <span class="cart-title">Current Order</span>
+            <span class="cart-count" id="cart-count">0 items</span>
+          </div>
+          <div class="cart-customer">
+            <input id="customer-name" placeholder="Customer name (optional)">
+          </div>
+          <div class="cart-items" id="cart-items">
+            <div class="cart-empty" id="cart-empty">
+              <div class="cart-empty-icon">&#9635;</div>
+              <div>Tap a product to add it</div>
+            </div>
+          </div>
+          <div class="cart-footer">
+            <div class="cart-total-row">
+              <span class="cart-total-label">Total</span>
+              <span class="cart-total-val" id="cart-total">₱0</span>
+            </div>
+            <div class="payment-method-row">
+              <button class="pay-btn active" id="pay-cash" onclick="setPayMethod('cash')">&#9679; Cash</button>
+              <button class="pay-btn" id="pay-gcash" onclick="setPayMethod('gcash')">&#9679; GCash</button>
+            </div>
+            <div class="gcash-select-wrap" id="gcash-select-wrap" style="display:none">
+              <select class="form-input" id="gcash-account-select">
+                <option value="">— Select GCash Account —</option>
+              </select>
+            </div>
+            <button class="btn-checkout" id="btn-checkout" onclick="checkout()" disabled>Proceed to Payment</button>
+            <button class="btn-clear" onclick="clearCart()">Clear Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ INVENTORY ═══ -->
+    <div class="page" id="page-inventory">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.8rem">
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <input id="inv-search" placeholder="Search..." style="background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.45rem 0.8rem;outline:none;width:180px" oninput="renderInventory()">
+        </div>
+        <button class="btn-save" style="padding:0.55rem 1.3rem;font-size:0.65rem" onclick="openProductModal()">+ Add Product</button>
+      </div>
+
+      <div class="inv-grid" id="inv-grid">
+        <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem;grid-column:1/-1">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ═══ ORDERS ═══ -->
+    <div class="page" id="page-orders">
+      <div style="display:flex;gap:0.6rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center">
+        <input type="date" id="order-date-filter" class="form-input" style="width:170px" onchange="loadOrders()">
+        <select class="form-input" id="order-status-filter" style="width:150px" onchange="loadOrders()">
+          <option value="">All Status</option>
+          <option value="completed">Completed</option>
+          <option value="pending_payment">Pending Payment</option>
+          <option value="voided">Voided</option>
+        </select>
+        <button class="btn-save" style="padding:0.55rem 1.2rem;font-size:0.65rem" onclick="loadOrders()">Refresh</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><span class="section-card-title">Order History</span></div>
+        <table>
+          <thead><tr><th>Time</th><th>Customer</th><th>Items</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead>
+          <tbody id="orders-body"><tr><td colspan="7" style="text-align:center;padding:2rem;color:rgba(200,216,204,0.25)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ GCASH ACCOUNTS ═══ -->
+    <div class="page" id="page-gcash">
+      <div class="section-card">
+        <div class="section-card-header">
+          <span class="section-card-title">GCash Accounts</span>
+          <button class="section-card-action" id="gcash-add-btn" onclick="openGcashModal()">+ Add Account</button>
+        </div>
+        <table>
+          <thead><tr><th>Name / Label</th><th>GCash Number</th><th>Account Holder</th><th>Status</th><th></th></tr></thead>
+          <tbody id="gcash-body"><tr><td colspan="5" style="text-align:center;padding:2rem;color:rgba(200,216,204,0.25)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div style="padding:0.8rem 1rem;font-size:0.65rem;color:rgba(200,216,204,0.3)">GCash numbers entered here will appear as payment targets in the POS and will be encoded into QR codes for customer scanning.</div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ── QR / Payment Modal ── -->
+<div class="overlay-backdrop" id="payment-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closePaymentModal()">&#10005;</button>
+    <p class="overlay-title" id="pm-title">GCash Payment</p>
+    <p class="overlay-sub" id="pm-sub">Ask customer to scan and pay</p>
+
+    <div id="pm-receipt" style="display:none">
+      <div class="receipt-box">
+        <div class="receipt-icon">&#10003;</div>
+        <div class="receipt-title">Payment Received!</div>
+        <div class="receipt-sub" id="pm-receipt-detail">Order completed successfully.</div>
+      </div>
+      <button class="btn-save" style="width:100%" onclick="closePaymentModal()">Done — New Order</button>
+    </div>
+
+    <div id="pm-gcash-flow">
+      <div class="qr-wrap">
+        <div class="qr-code-box" id="qr-box">
+          <img id="qr-img" src="" alt="QR Code">
+        </div>
+        <div class="qr-amount" id="qr-amount">₱0</div>
+        <div class="qr-to">
+          Send to<br>
+          <strong id="qr-holder">—</strong>
+          <span id="qr-number">—</span>
+        </div>
+      </div>
+
+      <div class="order-items-summary" id="pm-items"></div>
+
+      <button class="btn-confirm-pay" onclick="confirmGcashPayment()">&#10003; Mark as Received</button>
+      <button class="btn-cancel-order" onclick="cancelCurrentOrder()">Void Order</button>
+    </div>
+
+    <div id="pm-cash-flow">
+      <div class="order-items-summary" id="pm-cash-items"></div>
+      <div style="text-align:center;margin-bottom:1.2rem">
+        <div class="qr-total-label" style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,216,204,0.4);margin-bottom:0.3rem">Total Due</div>
+        <div class="qr-amount" id="cash-amount">₱0</div>
+      </div>
+      <button class="btn-confirm-pay" onclick="confirmCashPayment()">&#10003; Cash Received — Complete Order</button>
+      <button class="btn-cancel-order" onclick="cancelCurrentOrder()">Void Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Product Modal ── -->
+<div class="overlay-backdrop" id="product-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('product-modal')">&#10005;</button>
+    <p class="overlay-title" id="prod-modal-title">Add Product</p>
+    <p class="overlay-sub">Fill in product details</p>
+    <input type="hidden" id="pm-prod-id">
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Product Name</label><input class="form-input" id="pm-name" placeholder="e.g. Mineral Water"></div>
+      <div class="form-group"><label class="form-label">Category</label><input class="form-input" id="pm-cat" placeholder="Drinks, Snacks…"></div>
+      <div class="form-group"><label class="form-label">Unit</label><input class="form-input" id="pm-unit" placeholder="pc, bottle, bag…"></div>
+      <div class="form-group"><label class="form-label">Price (₱)</label><input class="form-input" id="pm-price" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Stock</label><input class="form-input" id="pm-stock" type="number" placeholder="0"></div>
+      <div class="form-group full"><label class="form-label">Description (optional)</label><input class="form-input" id="pm-desc" placeholder="Short description"></div>
+    </div>
+    <div style="display:flex;gap:0.6rem;margin-top:0.5rem">
+      <button class="btn-save" style="flex:1" onclick="saveProduct()">Save Product</button>
+      <button class="btn-del" id="pm-del-btn" style="display:none" onclick="deleteProduct()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Stock Adjust Modal ── -->
+<div class="overlay-backdrop" id="stock-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('stock-modal')">&#10005;</button>
+    <p class="overlay-title">Adjust Stock</p>
+    <p class="overlay-sub" id="sm-prod-name">—</p>
+    <input type="hidden" id="sm-prod-id">
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Adjustment</label><input class="form-input" id="sm-adj" type="number" placeholder="+10 or -5"></div>
+      <div class="form-group"><label class="form-label">Note</label><input class="form-input" id="sm-note" placeholder="Restock, damaged…"></div>
+    </div>
+    <p style="font-size:0.65rem;color:rgba(200,216,204,0.4);margin-bottom:1rem">Current stock: <strong id="sm-current" style="color:var(--cream)">—</strong></p>
+    <button class="btn-save" onclick="saveStockAdjust()">Apply</button>
+  </div>
+</div>
+
+<!-- ── GCash Account Modal ── -->
+<div class="overlay-backdrop" id="gcash-modal">
+  <div class="overlay-box">
+    <button class="overlay-close" onclick="closeModal('gcash-modal')">&#10005;</button>
+    <p class="overlay-title" id="gcash-modal-title">Add GCash Account</p>
+    <p class="overlay-sub">This account will receive GCash payments from the POS</p>
+    <input type="hidden" id="gm-id">
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Label / Name</label><input class="form-input" id="gm-name" placeholder="e.g. Main Store Account"></div>
+      <div class="form-group"><label class="form-label">GCash Number</label><input class="form-input" id="gm-number" placeholder="09XXXXXXXXX"></div>
+      <div class="form-group"><label class="form-label">Account Holder</label><input class="form-input" id="gm-holder" placeholder="Full name on GCash"></div>
+    </div>
+    <button class="btn-save" style="width:100%;margin-top:0.5rem" onclick="saveGcashAccount()">Save Account</button>
+  </div>
+</div>
+
+<script>
+/* ── State ── */
+let products       = [];
+let gcashAccounts  = [];
+let cart           = [];          // [{product, quantity}]
+let payMethod      = 'cash';
+let currentOrderId = null;
+let currentUser    = null;
+let activeCategory = 'All';
+
+const API_BASE = '';
+
+/* ── Bootstrap ── */
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('ledge_token');
+  if (!token) { window.location.href = '/login'; return; }
+
+  try {
+    const me = await apiFetch('GET', '/api/auth/me');
+    currentUser = me;
+    document.getElementById('staff-av').textContent   = (me.name || 'S')[0].toUpperCase();
+    document.getElementById('staff-name').textContent = me.name || 'Staff';
+    document.getElementById('staff-role').textContent = me.role || '';
+
+    // Only store_staff, manager, admin can access this page
+    if (!['store_staff','manager','admin'].includes(me.role)) {
+      alert('You do not have access to the store panel.');
+      window.location.href = '/login';
+      return;
+    }
+
+    // FIX: hide admin-only UI from store_staff — API already blocks calls with 403,
+    // but showing buttons that do nothing is confusing UX.
+    const isAdminOrManager = ['admin','manager'].includes(me.role);
+    if (!isAdminOrManager) {
+      // Hide "+ Add Product" button in inventory header
+      const addProductBtn = document.querySelector('#page-inventory .btn-save');
+      if (addProductBtn) addProductBtn.style.display = 'none';
+      // Hide GCash nav item entirely — store_staff don't need it
+      const gcashNavItem = document.querySelector('.nav-item[onclick*="gcash"]');
+      if (gcashNavItem) gcashNavItem.style.display = 'none';
+      // Hide "+ Add Account" button on GCash page
+      const gcashAddBtn = document.getElementById('gcash-add-btn');
+      if (gcashAddBtn) gcashAddBtn.style.display = 'none';
+    }
+    // Store role globally so render functions can use it
+    window._storeUserRole = me.role;
+  } catch(e) {
+    localStorage.removeItem('ledge_token');
+    window.location.href = '/login';
+    return;
+  }
+
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+  // Set today's date in order filter
+  document.getElementById('order-date-filter').value = new Date().toISOString().split('T')[0];
+
+  await Promise.all([loadProducts(), loadGcashAccounts()]);
+});
+
+/* ── API helper ── */
+async function apiFetch(method, endpoint, data) {
+  const token = localStorage.getItem('ledge_token');
+  const opts  = { method, headers: { 'Content-Type': 'application/json' } };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (data)  opts.body = JSON.stringify(data);
+  const res  = await fetch(API_BASE + endpoint, opts);
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || json.message || 'Request failed');
+  return json;
+}
+
+function logout() {
+  localStorage.removeItem('ledge_token');
+  window.location.href = '/login';
+}
+
+/* ── Navigation ── */
+function showPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+
+  const titles = { pos: 'Point <em>of Sale</em>', inventory: 'Inventory <em>Management</em>', orders: 'Order <em>History</em>', gcash: 'GCash <em>Accounts</em>' };
+  document.getElementById('topbar-title').innerHTML = titles[page] || page;
+
+  if (page === 'orders')    loadOrders();
+  if (page === 'gcash')     renderGcashTable();
+  if (page === 'inventory') renderInventory();
+}
+
+/* ── Load data ── */
+async function loadProducts() {
+  try {
+    products = await apiFetch('GET', '/api/store/products');
+    buildCategoryTabs();
+    renderProductGrid();
+    renderInventory();
+  } catch(e) { toast('Failed to load products'); }
+}
+
+async function loadGcashAccounts() {
+  try {
+    gcashAccounts = await apiFetch('GET', '/api/store/gcash-accounts');
+    renderGcashSelect();
+    renderGcashTable();
+  } catch(e) { toast('Failed to load GCash accounts'); }
+}
+
+async function loadOrders() {
+  try {
+    const date   = document.getElementById('order-date-filter').value;
+    const status = document.getElementById('order-status-filter').value;
+    let   url    = '/api/store/orders?';
+    if (date)   url += 'date=' + date + '&';
+    if (status) url += 'status=' + status;
+    const orders = await apiFetch('GET', url);
+    renderOrdersTable(orders);
+  } catch(e) { toast('Failed to load orders'); }
+}
+
+/* ── Product Grid (POS) ── */
+function buildCategoryTabs() {
+  const cats = ['All', ...new Set(products.map(p => p.category || 'General').sort())];
+  const tabs  = document.getElementById('cat-tabs');
+  tabs.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c === activeCategory ? 'active' : ''}" onclick="setCategory(${JSON.stringify(c)},this)">${esc(c)}</button>`
+  ).join('');
+}
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderProductGrid();
+}
+
+function filterProducts() {
+  renderProductGrid();
+}
+
+function renderProductGrid() {
+  const search = (document.getElementById('prod-search')?.value || '').toLowerCase();
+  let   list   = products.filter(p => p.is_active);
+  if (activeCategory !== 'All') list = list.filter(p => (p.category || 'General') === activeCategory);
+  if (search) list = list.filter(p => p.name.toLowerCase().includes(search) || (p.category || '').toLowerCase().includes(search));
+
+  const grid = document.getElementById('prod-grid');
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">No products found</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const oos = p.stock <= 0;
+    return `
+      <div class="prod-card ${oos ? 'out-of-stock' : ''}" onclick="${oos ? '' : 'addToCart(' + p.id + ')'}">
+        <div class="add-indicator">+</div>
+        <div class="prod-category">${esc(p.category || 'General')}</div>
+        <div class="prod-name">${esc(p.name)}</div>
+        <div class="prod-price">₱${fmt(p.price)}</div>
+        <div class="prod-stock">${oos ? '❌ Out of stock' : p.stock + ' ' + esc(p.unit || 'pc') + ' left'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Cart ── */
+function addToCart(productId) {
+  const product = products.find(p => p.id === productId);
+  if (!product || product.stock <= 0) return;
+
+  const existing = cart.find(i => i.product.id === productId);
+  if (existing) {
+    if (existing.quantity >= product.stock) { toast('No more stock available'); return; }
+    existing.quantity++;
+  } else {
+    cart.push({ product, quantity: 1 });
+  }
+  renderCart();
+  toast(`${product.name} added`);
+}
+
+function setQty(productId, qty) {
+  const item    = cart.find(i => i.product.id === productId);
+  const product = products.find(p => p.id === productId);
+  if (!item) return;
+  const newQty  = Math.max(0, Math.min(qty, product?.stock || 0));
+  if (newQty === 0) { removeFromCart(productId); return; }
+  item.quantity = newQty;
+  renderCart();
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(i => i.product.id !== productId);
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  currentOrderId = null;
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const countEl   = document.getElementById('cart-count');
+  const totalEl   = document.getElementById('cart-total');
+  const checkBtn  = document.getElementById('btn-checkout');
+
+  const total     = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+  const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
+
+  countEl.textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
+  totalEl.textContent = '₱' + fmt(total);
+  checkBtn.disabled   = cart.length === 0;
+
+  // FIX BUG 1: was reassigning a const and doing broken DOM manipulation
+  if (!cart.length) {
+    container.innerHTML = `
+      <div class="cart-empty" id="cart-empty">
+        <div class="cart-empty-icon">&#9635;</div>
+        <div>Tap a product to add it</div>
+      </div>`;
+    return;
+  }
+
+  // FIX XSS: use esc() for all server/user data interpolated into innerHTML
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div style="flex:1">
+        <div class="cart-item-name">${esc(item.product.name)}</div>
+        <div class="cart-item-cat">${esc(item.product.category || '')} · ₱${fmt(item.product.price)} each</div>
+      </div>
+      <div class="cart-qty-ctrl">
+        <button class="qty-btn" onclick="setQty(${item.product.id}, ${item.quantity - 1})">−</button>
+        <span class="qty-val">${item.quantity}</span>
+        <button class="qty-btn" onclick="setQty(${item.product.id}, ${item.quantity + 1})">+</button>
+      </div>
+      <div class="cart-item-price">₱${fmt(item.product.price * item.quantity)}</div>
+      <span class="cart-item-del" onclick="removeFromCart(${item.product.id})">&#10005;</span>
+    </div>
+  `).join('');
+}
+
+function setPayMethod(method) {
+  payMethod = method;
+  document.getElementById('pay-cash').classList.toggle('active',  method === 'cash');
+  document.getElementById('pay-gcash').classList.toggle('active', method === 'gcash');
+  document.getElementById('gcash-select-wrap').style.display = method === 'gcash' ? 'block' : 'none';
+}
+
+function renderGcashSelect() {
+  const sel = document.getElementById('gcash-account-select');
+  sel.innerHTML = '<option value="">— Select GCash Account —</option>' +
+    gcashAccounts.filter(a => a.is_active !== false).map(a =>
+      `<option value="${a.id}">${esc(a.name)} · ${esc(a.number)} (${esc(a.holder_name)})</option>`
+    ).join('');
+}
+
+/* ── Checkout ── */
+async function checkout() {
+  if (!cart.length) return;
+
+  const customerName   = document.getElementById('customer-name').value.trim();
+  const gcashAccountId = payMethod === 'gcash' ? document.getElementById('gcash-account-select').value : null;
+
+  if (payMethod === 'gcash' && !gcashAccountId) {
+    toast('Please select a GCash account');
+    return;
+  }
+
+  try {
+    const order = await apiFetch('POST', '/api/store/orders', {
+      items:            cart.map(i => ({ product_id: i.product.id, quantity: i.quantity })),
+      payment_method:   payMethod,
+      gcash_account_id: gcashAccountId ? parseInt(gcashAccountId) : null,
+      customer_name:    customerName || 'Walk-in',
+    });
+
+    currentOrderId = order.id;
+
+    // Refresh local product stock
+    await loadProducts();
+    renderCart();
+
+    openPaymentModal(order);
+  } catch(e) {
+    toast(e.message || 'Failed to create order');
+  }
+}
+
+function openPaymentModal(order) {
+  const total = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+
+  document.getElementById('pm-receipt').style.display        = 'none';
+  document.getElementById('pm-gcash-flow').style.display     = 'none';
+  document.getElementById('pm-cash-flow').style.display      = 'none';
+
+  const itemsSummaryHtml = cart.map(i =>
+    `<div class="order-item-row"><span>${esc(i.product.name)} × ${i.quantity}</span><span>₱${fmt(i.product.price * i.quantity)}</span></div>`
+  ).join('');
+
+  if (payMethod === 'gcash') {
+    document.getElementById('pm-title').textContent = 'GCash Payment';
+    document.getElementById('pm-sub').textContent   = 'Have the customer scan the QR code below';
+    document.getElementById('pm-gcash-flow').style.display = 'block';
+
+    const accId  = document.getElementById('gcash-account-select').value;
+    const acc    = gcashAccounts.find(a => a.id == accId);
+    const number = acc?.number || '';
+    const holder = acc?.holder_name || '';
+
+    document.getElementById('qr-amount').textContent  = '₱' + fmt(total);
+    document.getElementById('qr-holder').textContent  = holder;
+    document.getElementById('qr-number').textContent  = number;
+    document.getElementById('pm-items').innerHTML     = itemsSummaryHtml;
+
+    // FIX BUG 14: Use GCash standard QR (GCash Pay Link format).
+    // The QR encodes only the number and amount — no names or internal data.
+    // api.qrserver.com is whitelisted in CSP imgSrc for this purpose.
+    const gcashPayload = `https://gcash.com/qr?a=${encodeURIComponent(number)}&amount=${total.toFixed(2)}`;
+    const qrApiUrl     = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data=${encodeURIComponent(gcashPayload)}`;
+    document.getElementById('qr-img').src = qrApiUrl;
+
+  } else {
+    document.getElementById('pm-title').textContent = 'Cash Payment';
+    document.getElementById('pm-sub').textContent   = 'Collect payment then confirm';
+    document.getElementById('pm-cash-flow').style.display = 'block';
+    document.getElementById('cash-amount').textContent    = '₱' + fmt(total);
+    document.getElementById('pm-cash-items').innerHTML    = itemsSummaryHtml;
+  }
+
+  document.getElementById('payment-modal').classList.add('open');
+}
+
+async function confirmGcashPayment() {
+  if (!currentOrderId) return;
+  try {
+    await apiFetch('PATCH', `/api/store/orders/${currentOrderId}/confirm`);
+    showReceipt();
+  } catch(e) {
+    toast(e.message || 'Failed to confirm payment');
+  }
+}
+
+async function confirmCashPayment() {
+  // Cash orders are auto-completed on creation
+  showReceipt();
+}
+
+function showReceipt() {
+  const customerName = document.getElementById('customer-name').value.trim() || 'Walk-in';
+  const total        = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+
+  document.getElementById('pm-gcash-flow').style.display = 'none';
+  document.getElementById('pm-cash-flow').style.display  = 'none';
+  document.getElementById('pm-receipt').style.display    = 'block';
+  document.getElementById('pm-title').textContent        = 'Payment Received';
+  document.getElementById('pm-sub').textContent          = '';
+  document.getElementById('pm-receipt-detail').textContent =
+    `₱${fmt(total)} received from ${customerName}. Order #${currentOrderId} completed.`;
+}
+
+async function cancelCurrentOrder() {
+  if (!currentOrderId) { closePaymentModal(); return; }
+  if (!confirm('Void this order? Stock will be restored.')) return;
+  try {
+    await apiFetch('PATCH', `/api/store/orders/${currentOrderId}/void`);
+    toast('Order voided');
+    closePaymentModal();
+    await loadProducts();
+    renderCart();
+  } catch(e) { toast(e.message || 'Failed to void order'); }
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open');
+  clearCart();
+  document.getElementById('customer-name').value = '';
+  currentOrderId = null;
+}
+
+/* ── Orders table ── */
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('orders-body');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:rgba(200,216,204,0.25)">No orders found</td></tr>';
+    return;
+  }
+  // FIX XSS: escape all server-sourced data before inserting into innerHTML
+  const safeStatuses = ['completed', 'voided', 'pending_payment'];
+  tbody.innerHTML = orders.map(o => {
+    const itemList = (o.items || []).map(i => esc(i.product_name) + ' ×' + i.quantity).join(', ');
+    const time     = new Date(o.created_at).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+    const dateStr  = new Date(o.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const status   = safeStatuses.includes(o.status) ? o.status : 'pending_payment';
+    const badgeClass = status === 'completed' ? 'completed' : status === 'voided' ? 'voided' : 'pending';
+    return `<tr>
+      <td>${esc(dateStr)} ${esc(time)}</td>
+      <td>${esc(o.customer_name || '—')}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(itemList)}">${itemList}</td>
+      <td style="color:var(--gold)">₱${fmt(o.total)}</td>
+      <td>${o.payment_method === 'gcash' ? '📱 GCash' : '💵 Cash'}</td>
+      <td><span class="badge badge-${badgeClass}">${esc(status.replace('_',' '))}</span></td>
+      <td>${status === 'pending_payment' ? `<button class="inv-btn" onclick="staffConfirmPayment(${Number(o.id)})">Confirm</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function staffConfirmPayment(orderId) {
+  try {
+    await apiFetch('PATCH', `/api/store/orders/${orderId}/confirm`);
+    toast('Payment confirmed');
+    loadOrders();
+  } catch(e) { toast(e.message || 'Failed'); }
+}
+
+/* ── Inventory ── */
+function renderInventory() {
+  const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
+  const list   = products.filter(p => p.is_active && (!search || p.name.toLowerCase().includes(search) || (p.category||'').toLowerCase().includes(search)));
+  const grid   = document.getElementById('inv-grid');
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">No products</div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const stockClass = p.stock <= 0 ? 'out' : p.stock <= 5 ? 'low' : 'ok';
+    return `<div class="inv-card ${p.stock <= 5 && p.stock > 0 ? 'low-stock' : ''}">
+      <div class="inv-cat">${esc(p.category || 'General')}</div>
+      <div class="inv-name">${esc(p.name)}</div>
+      <div class="inv-stock-row">
+        <div class="inv-stock-num ${stockClass === 'out' || stockClass === 'low' ? 'low' : ''}">${p.stock}</div>
+        <div class="inv-price">₱${fmt(p.price)}</div>
+      </div>
+      <div style="font-size:0.6rem;color:rgba(200,216,204,0.3);margin-bottom:0.5rem">${esc(p.unit || 'pc')} · ${stockClass === 'out' ? '❌ Out' : stockClass === 'low' ? '⚠ Low' : '✓ OK'}</div>
+      <div class="inv-actions">
+        <button class="inv-btn" onclick="openStockModal(${Number(p.id)})">Adjust Stock</button>
+        ${['admin','manager'].includes(window._storeUserRole || '') ? `<button class="inv-btn" onclick="openProductModal(${Number(p.id)})">Edit</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Product modal ── */
+function openProductModal(id) {
+  const p = id ? products.find(x => x.id === id) : null;
+  document.getElementById('prod-modal-title').textContent = p ? 'Edit Product' : 'Add Product';
+  document.getElementById('pm-prod-id').value = p?.id || '';
+  document.getElementById('pm-name').value    = p?.name || '';
+  document.getElementById('pm-cat').value     = p?.category || '';
+  document.getElementById('pm-unit').value    = p?.unit || '';
+  document.getElementById('pm-price').value   = p?.price || '';
+  document.getElementById('pm-stock').value   = p?.stock ?? '';
+  document.getElementById('pm-desc').value    = p?.description || '';
+  document.getElementById('pm-del-btn').style.display = p ? 'inline-block' : 'none';
+  openModal('product-modal');
+}
+
+async function saveProduct() {
+  const id   = document.getElementById('pm-prod-id').value;
+  const data = {
+    name:        document.getElementById('pm-name').value.trim(),
+    category:    document.getElementById('pm-cat').value.trim() || 'General',
+    unit:        document.getElementById('pm-unit').value.trim() || 'pc',
+    price:       parseFloat(document.getElementById('pm-price').value) || 0,
+    stock:       parseInt(document.getElementById('pm-stock').value) || 0,
+    description: document.getElementById('pm-desc').value.trim(),
+  };
+  if (!data.name) { toast('Name is required'); return; }
+  try {
+    if (id) {
+      await apiFetch('PUT', `/api/store/products/${id}`, data);
+      toast('Product updated');
+    } else {
+      await apiFetch('POST', '/api/store/products', data);
+      toast('Product created');
+    }
+    closeModal('product-modal');
+    await loadProducts();
+  } catch(e) { toast(e.message || 'Failed to save product'); }
+}
+
+async function deleteProduct() {
+  const id = document.getElementById('pm-prod-id').value;
+  if (!id || !confirm('Deactivate this product?')) return;
+  try {
+    await apiFetch('DELETE', `/api/store/products/${id}`);
+    toast('Product deactivated');
+    closeModal('product-modal');
+    await loadProducts();
+  } catch(e) { toast(e.message || 'Failed'); }
+}
+
+/* ── Stock adjust modal ── */
+function openStockModal(productId) {
+  const p = products.find(x => x.id === productId);
+  if (!p) return;
+  document.getElementById('sm-prod-id').value     = p.id;
+  document.getElementById('sm-prod-name').textContent = p.name;
+  document.getElementById('sm-current').textContent   = p.stock + ' ' + (p.unit || 'pc');
+  document.getElementById('sm-adj').value  = '';
+  document.getElementById('sm-note').value = '';
+  openModal('stock-modal');
+}
+
+async function saveStockAdjust() {
+  const id  = document.getElementById('sm-prod-id').value;
+  const adj = parseInt(document.getElementById('sm-adj').value);
+  if (isNaN(adj)) { toast('Enter a valid number'); return; }
+  try {
+    const res = await apiFetch('PATCH', `/api/store/products/${id}/stock`, {
+      adjustment: adj,
+      note:       document.getElementById('sm-note').value,
+    });
+    toast('Stock updated → ' + res.new_stock);
+    closeModal('stock-modal');
+    await loadProducts();
+  } catch(e) { toast(e.message || 'Failed'); }
+}
+
+/* ── GCash accounts ── */
+function renderGcashTable() {
+  const tbody = document.getElementById('gcash-body');
+  if (!tbody) return;
+  if (!gcashAccounts.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:rgba(200,216,204,0.25)">No accounts added yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = gcashAccounts.map(a => `<tr>
+    <td>${esc(a.name)}</td>
+    <td style="font-family:monospace;letter-spacing:0.06em">${esc(a.number)}</td>
+    <td>${esc(a.holder_name)}</td>
+    <td><span class="badge ${a.is_active !== false ? 'badge-completed' : 'badge-voided'}">${a.is_active !== false ? 'Active' : 'Inactive'}</span></td>
+    <td>${['admin','manager'].includes(window._storeUserRole || '') ? `<button class="inv-btn" onclick="openGcashModal(${Number(a.id)})">Edit</button>` : '—'}</td>
+  </tr>`).join('');
+}
+
+function openGcashModal(id) {
+  const a = id ? gcashAccounts.find(x => x.id === id) : null;
+  document.getElementById('gcash-modal-title').textContent = a ? 'Edit GCash Account' : 'Add GCash Account';
+  document.getElementById('gm-id').value     = a?.id || '';
+  document.getElementById('gm-name').value   = a?.name || '';
+  document.getElementById('gm-number').value = a?.number || '';
+  document.getElementById('gm-holder').value = a?.holder_name || '';
+  openModal('gcash-modal');
+}
+
+async function saveGcashAccount() {
+  const id   = document.getElementById('gm-id').value;
+  const data = {
+    name:        document.getElementById('gm-name').value.trim(),
+    number:      document.getElementById('gm-number').value.trim(),
+    holder_name: document.getElementById('gm-holder').value.trim(),
+  };
+  if (!data.name || !data.number || !data.holder_name) { toast('All fields required'); return; }
+  try {
+    if (id) {
+      await apiFetch('PUT', `/api/store/gcash-accounts/${id}`, data);
+      toast('Account updated');
+    } else {
+      await apiFetch('POST', '/api/store/gcash-accounts', data);
+      toast('Account added');
+    }
+    closeModal('gcash-modal');
+    await loadGcashAccounts();
+  } catch(e) { toast(e.message || 'Failed'); }
+}
+
+/* ── Utilities ── */
+function fmt(n) { return (n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+// XSS escape — always use this when inserting user/server data into innerHTML
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

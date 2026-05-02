@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow">
+<title>Staff Login — The Ledge Baguio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--pine:#1a2e1a;--pine-dark:#0d1a0d;--gold:#c5a255;--gold-dark:#a8893f;--cream:#f5f0e8;--mist:#c8d8cc;--font-serif:'Cormorant Garamond',serif;--font-sans:'Jost',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--pine-dark);color:var(--cream);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.wrap{width:100%;max-width:400px}
+.logo{text-align:center;margin-bottom:2.5rem}
+.logo p{font-family:var(--font-serif);font-size:2.2rem;font-weight:300;letter-spacing:0.1em}
+.logo p span{color:var(--gold);font-style:italic}
+.logo small{font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(200,216,204,0.3);display:block;margin-top:0.3rem}
+.card{background:var(--pine);border:1px solid rgba(200,216,204,0.1);padding:2.5rem}
+.card h2{font-family:var(--font-serif);font-size:1.6rem;font-weight:300;margin-bottom:0.25rem}
+.card .sub{font-size:0.7rem;color:rgba(200,216,204,0.35);margin-bottom:2rem;letter-spacing:0.04em}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:0.8rem;width:100%;padding:0.85rem;background:#fff;color:#3c4043;font-family:var(--font-sans);font-size:0.8rem;font-weight:500;border:none;cursor:pointer;transition:box-shadow 0.2s;margin-bottom:1.5rem;border-radius:2px}
+.btn-google:hover{box-shadow:0 1px 8px rgba(0,0,0,0.25)}
+.btn-google:disabled{opacity:0.5;cursor:not-allowed}
+.google-icon{width:20px;height:20px;flex-shrink:0}
+.divider{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(200,216,204,0.12)}
+.divider span{font-size:0.6rem;letter-spacing:0.2em;color:rgba(200,216,204,0.28);text-transform:uppercase}
+.form-group{margin-bottom:1.3rem}
+.form-group label{display:block;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,216,204,0.4);margin-bottom:0.4rem}
+.form-group input{width:100%;background:rgba(255,255,255,0.04);border:none;border-bottom:1px solid rgba(200,216,204,0.15);color:var(--cream);font-family:var(--font-sans);font-size:0.9rem;padding:0.7rem 0;outline:none;transition:border-color 0.2s}
+.form-group input:focus{border-bottom-color:rgba(197,162,85,0.5)}
+.form-group input::placeholder{color:rgba(200,216,204,0.2)}
+.btn-login{width:100%;background:var(--gold);color:var(--pine);font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.85rem;border:none;cursor:pointer;font-family:var(--font-sans);transition:background 0.2s;margin-top:0.3rem}
+.btn-login:hover{background:var(--gold-dark)}
+.btn-login:disabled{opacity:0.55;cursor:not-allowed}
+.msg{font-size:0.72rem;margin-top:1rem;text-align:center;min-height:1.2em;line-height:1.5}
+.msg.error{color:#c0594a}
+.msg.success{color:#4caf80}
+.msg.info{color:rgba(200,216,204,0.5)}
+.note{margin-top:1.2rem;padding:0.9rem;border:1px solid rgba(200,216,204,0.08);background:rgba(255,255,255,0.02);font-size:0.62rem;color:rgba(200,216,204,0.28);line-height:1.7;text-align:center}
+.back{text-align:center;margin-top:1.5rem;font-size:0.63rem;color:rgba(200,216,204,0.28)}
+.back a{color:rgba(200,216,204,0.4);text-decoration:none;transition:color 0.2s}
+.back a:hover{color:var(--gold)}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(26,46,26,0.3);border-top-color:var(--pine);border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">
+    <p>The <span>Ledge</span></p>
+    <small>Admin Panel</small>
+  </div>
+
+  <div class="card">
+    <h2>Sign In</h2>
+    <p class="sub">Restricted to authorized staff only</p>
+
+    <!-- Google button — hidden until we confirm it's configured -->
+    <div id="google-section" style="display:none">
+      <button class="btn-google" id="google-btn" onclick="signInWithGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="divider"><span>or use password</span></div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="Email address" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+
+    <button class="btn-login" id="login-btn" onclick="doLogin()">Sign In</button>
+
+    <p class="msg error" id="err-msg"></p>
+    <p class="msg success" id="ok-msg"></p>
+    <p class="msg info" id="info-msg"></p>
+
+    <div class="note" id="status-note">Checking configuration...</div>
+  </div>
+
+  <p class="back"><a href="/">← Back to website</a></p>
+</div>
+
+<script>
+// ── Handle token from Google OAuth callback ───────
+(function() {
+  const p     = new URLSearchParams(window.location.search);
+  const token = p.get('token');
+  const name  = p.get('name');
+  const email = p.get('email');
+  const role  = p.get('role');
+  const err   = p.get('error');
+
+  if (token) {
+    localStorage.setItem('ledge_token', token);
+    localStorage.setItem('ledge_user', JSON.stringify({ name, email, role }));
+    document.getElementById('ok-msg').textContent = `Welcome, ${name}! Redirecting...`;
+    history.replaceState({}, '', '/login');
+    setTimeout(() => window.location.href = '/admin', 700);
+    return;
+  }
+
+  if (err) {
+    const msgs = {
+      cancelled:             'Sign-in was cancelled.',
+      unauthorized:          'Your Gmail is not authorized to access this panel.',
+      unverified:            'Google email is not verified.',
+      deactivated:           'Your account has been deactivated.',
+      failed:                'Sign-in failed. Please try again.',
+      google_not_configured: 'Google Sign-In is not configured yet. Use password login below.',
+    };
+    document.getElementById('err-msg').textContent = msgs[err] || 'Sign-in failed.';
+    history.replaceState({}, '', '/login');
+  }
+})();
+
+// Already logged in
+if (localStorage.getItem('ledge_token')) window.location.href = '/admin';
+
+// ── Check if Google is configured on this server ──
+(async function checkConfig() {
+  const note = document.getElementById('status-note');
+  const googleSection = document.getElementById('google-section');
+  try {
+    const res  = await fetch('/api/auth/status');
+    if (res.ok) {
+      const d = await res.json();
+      if (d.google_enabled) {
+        googleSection.style.display = 'block';
+        note.textContent = 'Sign in with your authorized Gmail account.';
+      } else {
+        note.innerHTML = 'Google Sign-In not yet configured. Use password login.<br>' +
+          '<a href="/deploy/GOOGLE_OAUTH_SETUP.md" style="color:var(--gold);text-decoration:none">Setup guide →</a>';
+      }
+    } else {
+      note.textContent = 'Use email and password to sign in.';
+    }
+  } catch(_) {
+    note.textContent = 'Use email and password to sign in.';
+  }
+})();
+
+// ── Google Sign-In ────────────────────────────────
+function signInWithGoogle() {
+  const btn = document.getElementById('google-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Connecting to Google...';
+  window.location.href = '/api/auth/google';
+}
+
+// ── Password login ────────────────────────────────
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl    = document.getElementById('err-msg');
+  const btn      = document.getElementById('login-btn');
+  errEl.textContent = '';
+  document.getElementById('ok-msg').textContent = '';
+
+  if (!email || !password) { errEl.textContent = 'Email and password are required.'; return; }
+
+  btn.textContent = 'Signing in…';
+  btn.disabled    = true;
+
+  try {
+    const res  = await fetch('/api/auth/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    localStorage.setItem('ledge_token', data.token);
+    localStorage.setItem('ledge_user', JSON.stringify(data.user));
+    document.getElementById('ok-msg').textContent = `Welcome, ${data.user.name}! Redirecting...`;
+    setTimeout(() => window.location.href = '/admin', 600);
+  } catch(err) {
+    errEl.textContent = err.message || 'Invalid email or password.';
+    btn.textContent   = 'Sign In';
+    btn.disabled      = false;
+  }
+}
+</script>
+</body>
+</html>

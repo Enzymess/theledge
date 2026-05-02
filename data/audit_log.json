@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "action": "booking.auto_expired",
+    "entity": null,
+    "entity_id": null,
+    "note": "System startup — seed data loaded",
+    "ip_address": "system",
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-01T00:00:00.000Z"
+  }
+]

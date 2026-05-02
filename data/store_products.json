@@ -1,0 +1,10 @@
+[
+  { "id": 1, "name": "Mineral Water (500ml)", "category": "Drinks", "price": 35, "stock": 24, "unit": "bottle", "description": null, "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 2, "name": "Brewed Coffee (Sagada)", "category": "Drinks", "price": 80, "stock": 15, "unit": "pack", "description": "Local single-origin coffee from Sagada", "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 3, "name": "Piattos (Cheese)", "category": "Snacks", "price": 40, "stock": 20, "unit": "pack", "description": null, "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 4, "name": "Oatmeal Cookies", "category": "Snacks", "price": 55, "stock": 12, "unit": "pack", "description": "Homemade by local Baguio baker", "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 5, "name": "Instant Noodles", "category": "Snacks", "price": 25, "stock": 30, "unit": "pack", "description": null, "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 6, "name": "Strawberry Jam (local)", "category": "Pantry", "price": 120, "stock": 8, "unit": "jar", "description": "Fresh Baguio strawberry preserve", "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 7, "name": "Shampoo Sachet", "category": "Toiletries", "price": 15, "stock": 40, "unit": "pc", "description": null, "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" },
+  { "id": 8, "name": "Disposable Razor", "category": "Toiletries", "price": 30, "stock": 20, "unit": "pc", "description": null, "is_active": true, "created_at": "2026-01-01T00:00:00.000Z", "updated_at": "2026-01-01T00:00:00.000Z" }
+]

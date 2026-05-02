@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "name": "Maria Santos",
+    "email": "maria.santos@gmail.com",
+    "rating": 5,
+    "message": "The place was cozy, stylish, and had a breathtaking view of the mountains. The perfect mix of comfort and relaxation. I would definitely come back.",
+    "status": "approved",
+    "reviewed_by": 1,
+    "reviewed_at": "2026-04-05T09:00:00.000Z",
+    "reviewer_note": "",
+    "created_at": "2026-04-03T10:00:00.000Z",
+    "updated_at": "2026-04-05T09:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Jose Reyes",
+    "email": "jose.reyes@yahoo.com",
+    "rating": 5,
+    "message": "Our first experience here deserves a five-star rating. The amenities are very thoughtful and the staff are honest, guiding, and on-time.",
+    "status": "approved",
+    "reviewed_by": 1,
+    "reviewed_at": "2026-04-06T10:00:00.000Z",
+    "reviewer_note": "",
+    "created_at": "2026-04-05T08:00:00.000Z",
+    "updated_at": "2026-04-06T10:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Ana Cruz",
+    "email": "ana.cruz@gmail.com",
+    "rating": 5,
+    "message": "Superb! The staff is commendable and the view is amazing. The place is exceptionally clean. This will not be our last time booking here.",
+    "status": "approved",
+    "reviewed_by": 1,
+    "reviewed_at": "2026-04-07T08:00:00.000Z",
+    "reviewer_note": "",
+    "created_at": "2026-04-06T14:00:00.000Z",
+    "updated_at": "2026-04-07T08:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Ramon Dela Torre",
+    "email": "ramon.delatorre@outlook.com",
+    "rating": 4,
+    "message": "Really enjoyed the morning view from the balcony. Breakfast was good. Parking was a bit tricky but manageable. Overall a great stay.",
+    "status": "pending",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "reviewer_note": "",
+    "created_at": "2026-04-10T11:00:00.000Z",
+    "updated_at": "2026-04-10T11:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "Liza Flores",
+    "email": "liza.flores@gmail.com",
+    "rating": 5,
+    "message": "We came as a group of five friends and had the best time. The Ledge Suite is absolutely worth every peso. We watched the city lights all night from the deck.",
+    "status": "pending",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "reviewer_note": "",
+    "created_at": "2026-04-12T16:00:00.000Z",
+    "updated_at": "2026-04-12T16:00:00.000Z"
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "The Mist Room",
+    "description": "A cozy and comfortable room with a large window framing the city. Ideal for solo travelers and couples looking for a peaceful escape.",
+    "bed_type": "Queen",
+    "max_occupancy": 2,
+    "base_price": 1500,
+    "weekday_price": 1500,
+    "weekend_price": 1800,
+    "images": [],
+    "amenities": ["Free Breakfast", "City View Window", "Air Conditioning", "Free Wi-Fi"],
+    "is_active": true,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "The Pine Suite",
+    "description": "Wider space, upgraded furnishings, and a balcony-facing layout that lets the pine-framed cityscape pour into your room morning and night.",
+    "bed_type": "King",
+    "max_occupancy": 3,
+    "base_price": 2200,
+    "weekday_price": 2200,
+    "weekend_price": 2600,
+    "images": [],
+    "amenities": ["Free Breakfast", "Panoramic View", "Private Balcony Access", "Free Wi-Fi"],
+    "is_active": true,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "The Ledge Suite",
+    "description": "Our flagship room. Spacious, stylishly furnished, with direct access to the main viewing deck. Best for anniversaries and special celebrations.",
+    "bed_type": "King",
+    "max_occupancy": 4,
+    "base_price": 3000,
+    "weekday_price": 3000,
+    "weekend_price": 3500,
+    "images": [],
+    "amenities": ["Free Breakfast", "Deck Access", "Premium Furnishings", "Free Wi-Fi"],
+    "is_active": true,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+]

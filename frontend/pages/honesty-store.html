@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Honesty Store — The Ledge Baguio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --pine:#1a2e1a;--pine-dark:#0d1a0d;
+  --gold:#c5a255;--gold-dark:#a8893f;--gold-light:#d4b570;
+  --cream:#f5f0e8;--mist:#c8d8cc;
+  --border:rgba(200,216,204,0.12);--border-md:rgba(200,216,204,0.2);
+  --success:#4caf80;--warning:#c5a255;--danger:#c0594a;
+  --font-serif:'Cormorant Garamond',serif;--font-sans:'Jost',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--pine-dark);color:var(--cream);min-height:100vh}
+
+/* ── Nav ── */
+nav{background:var(--pine);border-bottom:1px solid var(--border);padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-logo{font-family:var(--font-serif);font-size:1.3rem;font-weight:300;letter-spacing:0.1em}
+.nav-logo span{color:var(--gold);font-style:italic}
+.nav-logo small{font-size:0.55rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(200,216,204,0.35);display:block;line-height:1}
+.nav-right{display:flex;align-items:center;gap:1.2rem}
+.nav-user{display:flex;align-items:center;gap:0.6rem;font-size:0.7rem;color:rgba(200,216,204,0.6)}
+.nav-avatar{width:30px;height:30px;background:rgba(197,162,85,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.68rem;color:var(--gold);font-weight:500;flex-shrink:0}
+.nav-back{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,216,204,0.4);text-decoration:none;transition:color 0.2s}
+.nav-back:hover{color:var(--gold)}
+
+/* ── Hero ── */
+.store-hero{background:var(--pine);border-bottom:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
+.store-hero h1{font-family:var(--font-serif);font-size:2.5rem;font-weight:300;margin-bottom:0.4rem}
+.store-hero h1 em{color:var(--gold);font-style:italic}
+.store-hero p{font-size:0.75rem;color:rgba(200,216,204,0.5);max-width:500px;margin:0 auto;line-height:1.7;letter-spacing:0.02em}
+.honesty-note{display:inline-flex;align-items:center;gap:0.5rem;margin-top:1rem;font-size:0.65rem;color:rgba(200,216,204,0.4);background:rgba(197,162,85,0.06);border:1px solid rgba(197,162,85,0.15);padding:0.5rem 1rem;letter-spacing:0.06em}
+
+/* ── Layout ── */
+.store-wrap{max-width:900px;margin:0 auto;padding:2rem}
+.section-title{font-family:var(--font-serif);font-size:1.4rem;font-weight:300;margin-bottom:0.3rem}
+.section-sub{font-size:0.68rem;color:rgba(200,216,204,0.4);margin-bottom:1.4rem;letter-spacing:0.04em}
+
+/* ── Tabs ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.8rem}
+.tab{padding:0.7rem 1.4rem;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;color:rgba(200,216,204,0.4);border-bottom:2px solid transparent;transition:all 0.2s;margin-bottom:-1px}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Product list for honesty form ── */
+.product-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:0.85rem;margin-bottom:1.5rem}
+.product-tile{background:var(--pine);border:1px solid var(--border);padding:1rem;cursor:pointer;transition:all 0.18s;position:relative;user-select:none}
+.product-tile:hover{border-color:var(--gold);background:rgba(197,162,85,0.04)}
+.product-tile.selected{border-color:var(--gold);background:rgba(197,162,85,0.1)}
+.product-tile .check{position:absolute;top:0.5rem;right:0.5rem;width:18px;height:18px;background:var(--gold);color:var(--pine);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;opacity:0;transition:opacity 0.15s}
+.product-tile.selected .check{opacity:1}
+.tile-cat{font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,216,204,0.35);margin-bottom:0.3rem}
+.tile-name{font-size:0.75rem;margin-bottom:0.4rem;line-height:1.3}
+.tile-price{font-family:var(--font-serif);font-size:1rem;color:var(--gold)}
+
+/* ── Honesty cart (items being reported) ── */
+.honesty-cart{background:var(--pine);border:1px solid var(--border);padding:1.2rem;margin-bottom:1.4rem}
+.honesty-cart-title{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.8;margin-bottom:0.8rem}
+.honesty-item-row{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border)}
+.honesty-item-row:last-child{border-bottom:none}
+.hi-name{flex:1;font-size:0.72rem}
+.hi-qty-ctrl{display:flex;align-items:center;gap:0.3rem}
+.hi-qty-btn{width:22px;height:22px;background:rgba(255,255,255,0.06);border:1px solid var(--border-md);color:var(--cream);font-size:0.75rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s}
+.hi-qty-btn:hover{border-color:var(--gold);color:var(--gold)}
+.hi-qty-val{width:28px;text-align:center;font-size:0.75rem}
+.hi-price{font-size:0.72rem;color:var(--gold);min-width:65px;text-align:right}
+.hi-del{color:rgba(200,216,204,0.2);cursor:pointer;font-size:0.7rem;margin-left:0.3rem;transition:color 0.15s}
+.hi-del:hover{color:var(--danger)}
+
+/* ── Custom item row ── */
+.custom-item-section{border:1px dashed var(--border-md);padding:1rem;margin-bottom:1rem}
+.custom-item-title{font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,216,204,0.4);margin-bottom:0.8rem}
+.custom-item-row{display:grid;grid-template-columns:1fr auto auto auto;gap:0.5rem;align-items:end;margin-bottom:0.5rem}
+.mini-input{background:rgba(255,255,255,0.04);border:1px solid var(--border-md);color:var(--cream);font-family:var(--font-sans);font-size:0.75rem;padding:0.45rem 0.6rem;outline:none;transition:border-color 0.2s;width:100%}
+.mini-input:focus{border-color:rgba(197,162,85,0.4)}
+.mini-input::placeholder{color:rgba(200,216,204,0.2)}
+.btn-add-custom{background:rgba(197,162,85,0.12);border:1px solid rgba(197,162,85,0.3);color:var(--gold);font-size:0.62rem;padding:0.45rem 0.8rem;cursor:pointer;font-family:var(--font-sans);transition:all 0.2s;white-space:nowrap}
+.btn-add-custom:hover{background:rgba(197,162,85,0.22)}
+
+/* ── Total ── */
+.honesty-total-row{display:flex;justify-content:space-between;align-items:center;padding:0.8rem 0;border-top:1px solid var(--border-md);margin-top:0.5rem}
+.honesty-total-label{font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,216,204,0.4)}
+.honesty-total-val{font-family:var(--font-serif);font-size:1.5rem;font-weight:300;color:var(--gold)}
+
+/* ── Note field ── */
+.note-group{margin-bottom:1.2rem}
+.note-label{font-size:0.56rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(200,216,204,0.4);margin-bottom:0.4rem;display:block}
+textarea.mini-input{resize:vertical;min-height:70px}
+
+/* ── Submit btn ── */
+.btn-submit{width:100%;background:var(--gold);color:var(--pine);font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.9rem;border:none;cursor:pointer;font-family:var(--font-sans);transition:background 0.2s;margin-bottom:0.6rem}
+.btn-submit:hover{background:var(--gold-dark)}
+.btn-submit:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ── History table ── */
+.history-card{background:var(--pine);border:1px solid var(--border);margin-bottom:1rem}
+.history-card-head{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:0.5rem}
+.history-ref{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,216,204,0.4)}
+.history-date{font-size:0.62rem;color:rgba(200,216,204,0.5)}
+.history-total{font-family:var(--font-serif);font-size:1rem;color:var(--gold)}
+.history-items{padding:0.8rem 1.2rem}
+.history-item-row{display:flex;justify-content:space-between;font-size:0.7rem;padding:0.3rem 0;border-bottom:1px solid var(--border);color:rgba(245,240,232,0.7)}
+.history-item-row:last-child{border-bottom:none}
+
+/* ── Badge ── */
+.badge{display:inline-block;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.18rem 0.6rem;border-radius:2px}
+.badge-pending{background:rgba(197,162,85,0.12);color:#d4b570;border:1px solid rgba(197,162,85,0.2)}
+.badge-verified{background:rgba(76,175,128,0.12);color:#6fcca0;border:1px solid rgba(76,175,128,0.2)}
+.badge-disputed{background:rgba(192,89,74,0.12);color:#e08070;border:1px solid rgba(192,89,74,0.2)}
+
+/* ── Success panel ── */
+.success-panel{text-align:center;padding:2.5rem;background:rgba(76,175,128,0.06);border:1px solid rgba(76,175,128,0.2);display:none}
+.success-icon{font-size:3rem;color:var(--success);margin-bottom:0.8rem}
+.success-title{font-family:var(--font-serif);font-size:1.6rem;font-weight:300;color:var(--success);margin-bottom:0.5rem}
+.success-sub{font-size:0.72rem;color:rgba(200,216,204,0.5);line-height:1.7}
+
+/* ── Auth gate ── */
+.auth-gate{display:none;text-align:center;padding:3rem 2rem;background:var(--pine);border:1px solid var(--border);margin-bottom:1.4rem}
+.auth-gate p{font-size:0.8rem;color:rgba(200,216,204,0.55);margin-bottom:1.2rem;line-height:1.7}
+.btn-login{display:inline-block;background:var(--gold);color:var(--pine);font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.7rem 2rem;cursor:pointer;font-family:var(--font-sans);text-decoration:none;transition:background 0.2s}
+.btn-login:hover{background:var(--gold-dark)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(16px);background:var(--pine-dark);color:var(--gold);padding:0.85rem 1.8rem;font-size:0.72rem;letter-spacing:0.05em;border:1px solid rgba(197,162,85,0.25);opacity:0;transition:opacity 0.3s,transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:600px){
+  .store-wrap{padding:1.2rem}
+  .store-hero{padding:1.8rem 1.2rem}
+  .product-list{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .custom-item-row{grid-template-columns:1fr auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">The <span>Ledge</span><small>Honesty Store</small></div>
+  <div class="nav-right">
+    <div class="nav-user" id="nav-user" style="display:none">
+      <div class="nav-avatar" id="nav-avatar">G</div>
+      <span id="nav-name">Guest</span>
+    </div>
+    <a href="/" class="nav-back">← Back to Site</a>
+  </div>
+</nav>
+
+<div class="store-hero">
+  <h1>The Honesty <em>Store</em></h1>
+  <p>Help yourself to what you need from our store. Record what you've taken below — on your honour. We trust you.</p>
+  <div class="honesty-note">🌿 An honesty system — please log everything you take</div>
+</div>
+
+<div class="store-wrap">
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('log',this)">Log What I Took</div>
+    <div class="tab" onclick="switchTab('history',this)">My History</div>
+  </div>
+
+  <!-- ══ LOG TAB ══ -->
+  <div class="tab-panel active" id="tab-log">
+
+    <!-- Auth gate (shown when not logged in) -->
+    <div class="auth-gate" id="auth-gate">
+      <p>Please sign in to submit your honesty log.<br>This lets us keep track of what was taken and by whom.</p>
+      <a href="/login" class="btn-login">Sign In</a>
+    </div>
+
+    <!-- Form (shown when logged in) -->
+    <div id="honesty-form-wrap">
+
+      <div class="section-title">What did you take?</div>
+      <p class="section-sub">Select from items below or add your own if something's not listed.</p>
+
+      <!-- Product tiles -->
+      <div class="product-list" id="product-tiles">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Loading available items…</div>
+      </div>
+
+      <!-- Custom item entry -->
+      <div class="custom-item-section">
+        <div class="custom-item-title">Add an unlisted item</div>
+        <div class="custom-item-row">
+          <div><input class="mini-input" id="custom-name" placeholder="Item name"></div>
+          <div><input class="mini-input" id="custom-price" type="number" placeholder="₱ Price" style="width:100px"></div>
+          <div><input class="mini-input" id="custom-qty" type="number" placeholder="Qty" style="width:70px" value="1"></div>
+          <button class="btn-add-custom" onclick="addCustomItem()">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Selected items / cart -->
+      <div class="honesty-cart" id="honesty-cart" style="display:none">
+        <div class="honesty-cart-title">Items I'm logging</div>
+        <div id="honesty-items"></div>
+        <div class="honesty-total-row">
+          <span class="honesty-total-label">Total</span>
+          <span class="honesty-total-val" id="honesty-total">₱0</span>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="note-group">
+        <label class="note-label" for="honesty-note">Additional note (optional)</label>
+        <textarea class="mini-input" id="honesty-note" placeholder="e.g. Took 2 waters and 1 chips at 10pm…"></textarea>
+      </div>
+
+      <!-- Success panel -->
+      <div class="success-panel" id="success-panel">
+        <div class="success-icon">✓</div>
+        <div class="success-title">Thank you for your honesty!</div>
+        <p class="success-sub">Your log has been submitted and saved. Our staff will review it shortly.<br>You can view your history in the "My History" tab.</p>
+        <br>
+        <button class="btn-submit" style="max-width:200px;margin:0 auto;display:block" onclick="resetForm()">Log More Items</button>
+      </div>
+
+      <button class="btn-submit" id="submit-btn" onclick="submitHonestyLog()" disabled>Submit Honesty Log</button>
+      <p style="font-size:0.62rem;color:rgba(200,216,204,0.3);text-align:center;line-height:1.6">By submitting, you confirm that this log accurately reflects what you took from the store. Thank you for keeping things fair for everyone. ✨</p>
+    </div>
+
+  </div>
+
+  <!-- ══ HISTORY TAB ══ -->
+  <div class="tab-panel" id="tab-history">
+    <div class="section-title">My Store History</div>
+    <p class="section-sub">A record of everything you've logged at the honesty store.</p>
+    <div id="history-list">
+      <div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Loading history…</div>
+    </div>
+  </div>
+
+</div><!-- /store-wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = '';
+let currentUser  = null;
+let products     = [];
+let honestyCart  = [];   // [{name, price, quantity, product_id?}]
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', async () => {
+  await checkAuth();
+  await loadPublicProducts();
+  renderProductTiles();
+  renderHonestyCart();
+});
+
+async function checkAuth() {
+  const token = localStorage.getItem('ledge_token');
+  if (!token) {
+    document.getElementById('auth-gate').style.display = 'block';
+    document.getElementById('honesty-form-wrap').style.display = 'none';
+    return;
+  }
+  try {
+    currentUser = await apiFetch('GET', '/api/auth/me');
+    document.getElementById('nav-user').style.display     = 'flex';
+    document.getElementById('nav-avatar').textContent     = (currentUser.name || 'G')[0].toUpperCase();
+    document.getElementById('nav-name').textContent       = currentUser.name || 'Guest';
+    document.getElementById('auth-gate').style.display    = 'none';
+    document.getElementById('honesty-form-wrap').style.display = 'block';
+  } catch(e) {
+    localStorage.removeItem('ledge_token');
+    document.getElementById('auth-gate').style.display   = 'block';
+    document.getElementById('honesty-form-wrap').style.display = 'none';
+  }
+}
+
+/* ── API ── */
+async function apiFetch(method, endpoint, data) {
+  const token = localStorage.getItem('ledge_token');
+  const opts  = { method, headers: { 'Content-Type': 'application/json' } };
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (data)  opts.body = JSON.stringify(data);
+  const res  = await fetch(API_BASE + endpoint, opts);
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || json.message || 'Request failed');
+  return json;
+}
+
+/* ── Tabs ── */
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'history') loadMyHistory();
+}
+
+/* ── Products ── */
+async function loadPublicProducts() {
+  try {
+    products = await apiFetch('GET', '/api/store/products/public');
+  } catch(e) {
+    products = [];
+  }
+}
+
+function renderProductTiles() {
+  const container = document.getElementById('product-tiles');
+  if (!products.length) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:rgba(200,216,204,0.25);font-size:0.72rem">No products available right now</div>';
+    return;
+  }
+
+  container.innerHTML = products.map(p => {
+    const inCart = honestyCart.find(i => i.product_id === p.id);
+    return `
+      <div class="product-tile ${inCart ? 'selected' : ''}" id="tile-${Number(p.id)}" onclick="toggleProduct(${Number(p.id)})">
+        <div class="check">✓</div>
+        <div class="tile-cat">${esc(p.category || 'General')}</div>
+        <div class="tile-name">${esc(p.name)}</div>
+        <div class="tile-price">₱${fmt(p.price)}</div>
+        <div style="font-size:0.6rem;color:rgba(200,216,204,0.3);margin-top:0.25rem">${esc(p.unit || 'pc')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleProduct(productId) {
+  const product  = products.find(p => p.id === productId);
+  if (!product) return;
+  const existing = honestyCart.find(i => i.product_id === productId);
+  if (existing) {
+    honestyCart = honestyCart.filter(i => i.product_id !== productId);
+  } else {
+    honestyCart.push({ product_id: productId, name: product.name, price: product.price, quantity: 1 });
+  }
+  renderProductTiles();
+  renderHonestyCart();
+}
+
+function addCustomItem() {
+  const name  = document.getElementById('custom-name').value.trim();
+  const priceRaw = document.getElementById('custom-price').value.trim();
+  const price = parseFloat(priceRaw) || 0;
+  const qty   = parseInt(document.getElementById('custom-qty').value) || 1;
+
+  if (!name) { toast('Please enter an item name'); return; }
+
+  // Warn if price is left blank — allow ₱0 (e.g. complimentary water) but make it deliberate
+  if (priceRaw === '' || priceRaw === '0') {
+    if (!confirm(`Adding "${name}" at ₱0.00. Is this item free / complimentary?`)) return;
+  }
+
+  honestyCart.push({ product_id: null, name, price, quantity: qty });
+  document.getElementById('custom-name').value  = '';
+  document.getElementById('custom-price').value = '';
+  document.getElementById('custom-qty').value   = '1';
+  renderHonestyCart();
+  toast(name + ' added');
+}
+
+function setHonestyQty(index, qty) {
+  const item   = honestyCart[index];
+  const newQty = Math.max(0, qty);
+  if (newQty === 0) {
+    honestyCart.splice(index, 1);
+  } else {
+    item.quantity = newQty;
+  }
+  renderProductTiles();
+  renderHonestyCart();
+}
+
+function removeHonestyItem(index) {
+  honestyCart.splice(index, 1);
+  renderProductTiles();
+  renderHonestyCart();
+}
+
+function renderHonestyCart() {
+  const cart      = document.getElementById('honesty-cart');
+  const items     = document.getElementById('honesty-items');
+  const totalEl   = document.getElementById('honesty-total');
+  const submitBtn = document.getElementById('submit-btn');
+
+  if (!honestyCart.length) {
+    cart.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = true;
+    return;
+  }
+
+  cart.style.display = 'block';
+  if (submitBtn) submitBtn.disabled = !currentUser;
+
+  const total = honestyCart.reduce((s, i) => s + i.price * i.quantity, 0);
+  totalEl.textContent = '₱' + fmt(total);
+
+  items.innerHTML = honestyCart.map((item, idx) => `
+    <div class="honesty-item-row">
+      <div class="hi-name">${esc(item.name)}${item.product_id ? '' : ' <em style="font-size:0.58rem;color:rgba(200,216,204,0.35)">(custom)</em>'}</div>
+      <div class="hi-qty-ctrl">
+        <button class="hi-qty-btn" onclick="setHonestyQty(${idx}, ${item.quantity - 1})">−</button>
+        <span class="hi-qty-val">${item.quantity}</span>
+        <button class="hi-qty-btn" onclick="setHonestyQty(${idx}, ${item.quantity + 1})">+</button>
+      </div>
+      <div class="hi-price">₱${fmt(item.price * item.quantity)}</div>
+      <span class="hi-del" onclick="removeHonestyItem(${idx})">✕</span>
+    </div>
+  `).join('');
+}
+
+/* ── Submit ── */
+async function submitHonestyLog() {
+  if (!currentUser) { toast('Please sign in first'); return; }
+  if (!honestyCart.length) { toast('Add at least one item'); return; }
+
+  const note  = document.getElementById('honesty-note').value.trim();
+  const items = honestyCart.map(i => ({
+    product_id: i.product_id || null,
+    name:       i.name,
+    price:      i.price,
+    quantity:   i.quantity,
+  }));
+
+  try {
+    await apiFetch('POST', '/api/store/honesty', { items, note });
+    // Show success
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('success-panel').style.display = 'block';
+    honestyCart = [];
+    renderProductTiles();
+    renderHonestyCart();
+    document.getElementById('honesty-note').value = '';
+  } catch(e) {
+    toast(e.message || 'Failed to submit. Please try again.');
+  }
+}
+
+function resetForm() {
+  document.getElementById('submit-btn').style.display = 'block';
+  document.getElementById('success-panel').style.display = 'none';
+  honestyCart = [];
+  renderProductTiles();
+  renderHonestyCart();
+}
+
+/* ── History ── */
+async function loadMyHistory() {
+  if (!currentUser) {
+    document.getElementById('history-list').innerHTML = '<div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Sign in to view your history</div>';
+    return;
+  }
+  try {
+    const entries = await apiFetch('GET', '/api/store/honesty/mine');
+    renderHistory(entries);
+  } catch(e) {
+    document.getElementById('history-list').innerHTML = '<div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">Failed to load history</div>';
+  }
+}
+
+function renderHistory(entries) {
+  const container = document.getElementById('history-list');
+  if (!entries.length) {
+    container.innerHTML = '<div style="text-align:center;padding:3rem;color:rgba(200,216,204,0.25);font-size:0.72rem">No logs yet — be the first to be honest 🌿</div>';
+    return;
+  }
+
+  container.innerHTML = entries.map(e => {
+    const date = new Date(e.created_at).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    // Whitelist status values so they can never inject HTML
+    const safeStatus = ['pending','verified','disputed'].includes(e.status) ? e.status : 'pending';
+    const statusLabel = { pending: 'Under Review', verified: 'Verified ✓', disputed: 'Needs Attention ⚠' }[safeStatus];
+    return `
+      <div class="history-card">
+        <div class="history-card-head">
+          <div>
+            <div class="history-ref">Entry #${Number(e.id)}</div>
+            <div class="history-date">${esc(date)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.8rem">
+            <div class="history-total">₱${fmt(e.total)}</div>
+            <span class="badge badge-${safeStatus}">${esc(statusLabel)}</span>
+          </div>
+        </div>
+        <div class="history-items">
+          ${(e.items || []).map(i => `
+            <div class="history-item-row">
+              <span>${esc(i.name)} × ${Number(i.quantity)}</span>
+              <span>₱${fmt(i.price * i.quantity)}</span>
+            </div>
+          `).join('')}
+          ${e.note ? `<div style="font-size:0.65rem;color:rgba(200,216,204,0.4);padding-top:0.5rem;border-top:1px solid var(--border);margin-top:0.3rem">"${esc(e.note)}"</div>` : ''}
+          ${safeStatus === 'disputed' && e.reviewer_note ? `<div style="font-size:0.65rem;color:var(--danger);padding-top:0.4rem">⚠ Staff note: ${esc(e.reviewer_note)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Utils ── */
+function fmt(n) {
+  return (n || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

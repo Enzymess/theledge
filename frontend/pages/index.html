@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ledge Baguio — Book Your Stay</title>
+    <!-- Preconnect for faster font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap">
+    <link rel="stylesheet" href="/public/css/style.css" />
+
+    <!-- ── Favicon ── -->
+    <link rel="icon" type="image/svg+xml" href="/public/images/favicon.svg">
+    <link rel="apple-touch-icon" href="/public/images/apple-touch-icon.png">
+
+    <!-- ── SEO Meta ── -->
+    <meta name="description" content="The Ledge Baguio is a boutique bed and breakfast perched above Baguio City with panoramic mountain views, free breakfast, and curated in-house experiences. Book directly for the best rate.">
+    <meta name="keywords" content="Baguio accommodation, Baguio bed and breakfast, boutique hotel Baguio, The Ledge Baguio, Baguio city view, Benguet hotel, Baguio transient house, Baguio staycation">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="The Ledge Baguio">
+    <link rel="canonical" href="https://www.theledgebaguio.com/">
+
+    <!-- ── Open Graph ── -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="https://www.theledgebaguio.com/">
+    <meta property="og:title"       content="The Ledge Baguio — Boutique Bed &amp; Breakfast with City View">
+    <meta property="og:description" content="A boutique stay above Baguio City. Panoramic views, free breakfast, and a curated mountain experience. Book directly for the best rate.">
+    <meta property="og:image"       content="https://www.theledgebaguio.com/public/images/og-cover.svg">
+    <meta property="og:image:width"  content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale"      content="en_PH">
+    <meta property="og:site_name"   content="The Ledge Baguio">
+
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="The Ledge Baguio — Boutique Bed &amp; Breakfast with City View">
+    <meta name="twitter:description" content="A boutique stay above Baguio City. Book directly for the best rate.">
+    <meta name="twitter:image"       content="https://www.theledgebaguio.com/public/images/og-cover.svg">
+
+    <!-- ── Geo ── -->
+    <meta name="geo.region"    content="PH-BEN">
+    <meta name="geo.placename" content="Baguio City, Benguet">
+    <meta name="geo.position"  content="16.4023;120.5960">
+    <meta name="ICBM"          content="16.4023, 120.5960">
+</head>
+<body>
+
+    <!-- ============================================================
+         NAVIGATION
+    ============================================================ -->
+    <nav id="navbar">
+        <a class="nav-logo" href="#">The <span>Ledge</span></a>
+        <div class="nav-links">
+            <a href="#rooms">Rooms</a>
+            <a href="#availability">Availability</a>
+            <a href="#experiences">Experiences</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#about">About</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <div class="nav-user-wrap">
+            <!-- Shown when logged out -->
+            <a class="nav-signin" id="nav-signin-btn" href="#" onclick="handlePublicSignin(event)" title="Sign in to view your bookings" style="display:none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:5px">
+                    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Sign In
+            </a>
+            <!-- Shown when logged in -->
+            <div class="nav-user-menu" id="nav-user-menu" style="display:none">
+                <button class="nav-user-btn" onclick="toggleUserDropdown()" id="nav-user-btn">
+                    <div class="nav-avatar" id="nav-avatar">G</div>
+                    <span id="nav-username">Guest</span>
+                    <span style="font-size:0.6rem;opacity:0.5">&#9662;</span>
+                </button>
+                <div class="nav-dropdown" id="nav-dropdown">
+                    <a href="#" onclick="openMyBookings();return false">My Bookings</a>
+                    <a href="/store" id="nav-store-link" style="display:none">Honesty Store</a>
+                    <a href="#" id="nav-admin-link" style="display:none;color:var(--gold)" onclick="window.location.href='/admin';return false">Admin Panel</a>
+                    <a href="#" onclick="signOutPublic();return false">Sign Out</a>
+                </div>
+            </div>
+        </div>
+        <button class="nav-book" onclick="openModal()">Book Now</button>
+        <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#rooms"       onclick="toggleMenu()">Rooms</a>
+        <a href="#availability" onclick="toggleMenu()">Availability</a>
+        <a href="#experiences" onclick="toggleMenu()">Experiences</a>
+        <a href="#gallery"     onclick="toggleMenu()">Gallery</a>
+        <a href="#about"       onclick="toggleMenu()">About</a>
+        <a href="#faq"         onclick="toggleMenu()">FAQ</a>
+        <a href="#contact"     onclick="toggleMenu()">Contact</a>
+        <button class="nav-book" onclick="toggleMenu(); openModal();">Book Now</button>
+    </div>
+
+    <!-- ============================================================
+         HERO
+    ============================================================ -->
+    <section class="hero">
+
+        <div class="hero-bg" id="hero-bg"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="mountains">
+            <svg viewBox="0 0 1440 320" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,320 L0,290 L180,230 L300,265 L420,210 L560,255 L680,200 L800,250 L920,220 L1060,258 L1180,225 L1280,255 L1440,215 L1440,320 Z" fill="rgba(10,18,10,0.7)"/>
+                <path d="M0,320 L0,300 L120,265 L220,285 L320,255 L440,278 L560,248 L640,270 L760,242 L860,268 L980,245 L1100,265 L1200,248 L1320,268 L1440,252 L1440,320 Z" fill="rgba(10,18,10,0.85)"/>
+            </svg>
+        </div>
+
+        <div class="fog-layer fog-1">
+            <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,60 Q200,20 400,60 T800,50 T1200,60 T1440,50 L1440,120 L0,120 Z" fill="rgba(200,220,205,0.6)"/>
+            </svg>
+        </div>
+        <div class="fog-layer fog-2">
+            <svg viewBox="0 0 1440 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,40 Q300,80 600,35 T1200,50 T1440,40 L1440,100 L0,100 Z" fill="rgba(200,220,205,0.5)"/>
+            </svg>
+        </div>
+
+        <div class="hero-content">
+            <p class="hero-tag">Baguio City, Benguet &middot; Since 2019</p>
+            <h1 class="hero-title">Above the<br><em>City Lights</em></h1>
+            <p class="hero-sub">An overlooking bed &amp; breakfast where morning fog rolls through pine-covered peaks and the city sparkles below.</p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="openModal()">Reserve a Room</button>
+                <a class="btn-ghost" href="#about">Discover More</a>
+            </div>
+        </div>
+
+        <div class="scroll-cue">
+            <span>Scroll</span>
+        </div>
+
+    </section>
+
+    <!-- ============================================================
+         BOOKING BAR
+    ============================================================ -->
+    <div class="booking-bar">
+        <div class="booking-field">
+            <label class="field-label">Check In</label>
+            <input type="date" id="checkin" class="field-input" />
+        </div>
+        <div class="booking-field">
+            <label class="field-label">Check Out</label>
+            <input type="date" id="checkout" class="field-input" />
+        </div>
+        <div class="booking-field">
+            <label class="field-label">Guests</label>
+            <select class="field-input" id="bar-guests">
+                <option value="1">1 Guest</option>
+                <option value="2">2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+            </select>
+        </div>
+        <div class="booking-field">
+            <label class="field-label">Room Type</label>
+            <select class="field-input" id="bar-room">
+                <option value="">Any Room</option>
+            </select>
+        </div>
+        <button class="booking-submit" onclick="checkBarAvailability()">Check Availability</button>
+    </div>
+
+    <!-- ============================================================
+         ABOUT
+    ============================================================ -->
+    <section class="about section-pad" id="about">
+        <div class="container">
+            <div class="about-grid">
+
+                <div class="about-text">
+                    <p class="eyebrow">Our Story</p>
+                    <h2>Where <em>Mist Meets</em><br>Mountain Air</h2>
+                    <p class="body-text">
+                        Perched on the hillsides of Baguio City, The Ledge is an intimate bed &amp; breakfast celebrated for its
+                        panoramic views, clean and serene atmosphere, and warm Filipino hospitality. Whether you're watching the
+                        fog drift in at dawn or gazing at the city lights at dusk — every moment here feels like a breath of
+                        fresh air.
+                    </p>
+                    <p class="body-text">
+                        Free breakfast is included with every stay, and our curated in-house experiences — from paint
+                        challenges to board games — make The Ledge feel like a home away from home.
+                    </p>
+                    <a class="btn-outline" href="#rooms">View Our Rooms</a>
+                </div>
+
+                <div class="about-stats">
+                    <div class="stat-box">
+                        <span class="stat-num">5.0</span>
+                        <span class="stat-desc">Guest Rating</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num">137K</span>
+                        <span class="stat-desc">Followers &amp; Fans</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num">4h</span>
+                        <span class="stat-desc">From Manila</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-num">360&deg;</span>
+                        <span class="stat-desc">Views of the City</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         RESORT SHOWCASE
+    ============================================================ -->
+    <section class="showcase section-pad" id="gallery">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">The Property</p>
+                <h2>A Resort <em>Worth Seeing</em></h2>
+                <p class="section-sub">Every corner of The Ledge is designed for comfort, views, and unforgettable moments.</p>
+            </div>
+
+            <div class="showcase-grid" id="showcase-grid">
+                <div class="showcase-card showcase-card--large">
+                    <div class="showcase-img" id="showcase-img-1" style="background-image: url('photos/photo1.png');"></div>
+                    <div class="showcase-caption">
+                        <span class="caption-tag">Exterior</span>
+                        <p>The modern hillside facade with a panoramic view deck</p>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="showcase-img" id="showcase-img-2" style="background-image: url('photos/photo2.png');"></div>
+                    <div class="showcase-caption">
+                        <span class="caption-tag">Al Fresco Deck</span>
+                        <p>Open-air seating overlooking the Baguio cityscape</p>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="showcase-img" id="showcase-img-3" style="background-image: url('photos/photo3.png');"></div>
+                    <div class="showcase-caption">
+                        <span class="caption-tag">Room Interior</span>
+                        <p>Cozy, well-appointed rooms with thoughtful amenities</p>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="showcase-img" id="showcase-img-4" style="background-image: url('photos/photo4.png');"></div>
+                    <div class="showcase-caption">
+                        <span class="caption-tag">Morning Fog</span>
+                        <p>Wake up to the famous Baguio mist rolling through the pines</p>
+                    </div>
+                </div>
+                <div class="showcase-card">
+                    <div class="showcase-img" id="showcase-img-5" style="background-image: url('photos/photo5.png');"></div>
+                    <div class="showcase-caption">
+                        <span class="caption-tag">Garden Path</span>
+                        <p>Lush landscaping and stone walls frame every walkway</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         ROOMS
+    ============================================================ -->
+    <section class="rooms section-pad" id="rooms">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">Accommodations</p>
+                <h2>Our Rooms</h2>
+                <p class="section-sub">Every room faces the view. Every morning starts with fog. Every stay is unforgettable.</p>
+            </div>
+
+            <div class="rooms-grid">
+
+                <div class="room-card">
+                    <div class="room-img r1" id="room-img-1"></div>
+                    <div class="room-body">
+                        <p class="room-type">Standard &middot; City View</p>
+                        <h3 class="room-name">The Mist Room</h3>
+                        <p class="room-desc">A cozy and comfortable room with a large window framing the city. Ideal for solo travelers and couples looking for a peaceful escape.</p>
+                        <ul class="room-amenities">
+                            <li>Free Breakfast</li>
+                            <li>City View Window</li>
+                            <li>Air Conditioning</li>
+                            <li>Free Wi-Fi</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="room-price">From <strong>PHP 1,500</strong> / night</span>
+                            <button class="btn-primary btn-sm" onclick="openModal(1)">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-card room-card--featured">
+                    <div class="room-badge">Most Popular</div>
+                    <div class="room-img r2" id="room-img-2"></div>
+                    <div class="room-body">
+                        <p class="room-type">Deluxe &middot; Panoramic View</p>
+                        <h3 class="room-name">The Pine Suite</h3>
+                        <p class="room-desc">Wider space, upgraded furnishings, and a balcony-facing layout that lets the pine-framed cityscape pour into your room morning and night.</p>
+                        <ul class="room-amenities">
+                            <li>Free Breakfast</li>
+                            <li>Panoramic View</li>
+                            <li>Private Balcony Access</li>
+                            <li>Free Wi-Fi</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="room-price">From <strong>PHP 2,200</strong> / night</span>
+                            <button class="btn-primary btn-sm" onclick="openModal(2)">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-card">
+                    <div class="room-img r3" id="room-img-3"></div>
+                    <div class="room-body">
+                        <p class="room-type">Premium &middot; Balcony Access</p>
+                        <h3 class="room-name">The Ledge Suite</h3>
+                        <p class="room-desc">Our flagship room. Spacious, stylishly furnished, with direct access to the main viewing deck. Best for anniversaries and special celebrations.</p>
+                        <ul class="room-amenities">
+                            <li>Free Breakfast</li>
+                            <li>Deck Access</li>
+                            <li>Premium Furnishings</li>
+                            <li>Free Wi-Fi</li>
+                        </ul>
+                        <div class="room-footer">
+                            <span class="room-price">From <strong>PHP 3,000</strong> / night</span>
+                            <button class="btn-primary btn-sm" onclick="openModal(3)">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    <!-- ============================================================
+         AVAILABILITY CALENDAR
+    ============================================================ -->
+    <section class="avail-cal-section section-pad" id="availability">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">Plan Your Visit</p>
+                <h2>Check <em>Availability</em></h2>
+                <p class="section-sub">See which dates are open. Green means rooms are available — tap any date to start booking.</p>
+            </div>
+
+            <div class="avail-cal-wrap">
+                <!-- Month navigation -->
+                <div class="avail-cal-nav">
+                    <button class="avail-nav-btn" onclick="pubCalNav(-1)" aria-label="Previous month">&#8249;</button>
+                    <span class="avail-cal-month-label" id="pub-cal-label">Loading...</span>
+                    <button class="avail-nav-btn" onclick="pubCalNav(1)" aria-label="Next month">&#8250;</button>
+                </div>
+
+                <!-- Legend -->
+                <div class="avail-legend">
+                    <div class="avail-legend-item"><span class="avail-dot avail-dot-open"></span> Available</div>
+                    <div class="avail-legend-item"><span class="avail-dot avail-dot-partial"></span> Limited</div>
+                    <div class="avail-legend-item"><span class="avail-dot avail-dot-full"></span> Fully Booked</div>
+                    <div class="avail-legend-item"><span class="avail-dot avail-dot-blocked"></span> Unavailable</div>
+                </div>
+
+                <!-- Day headers -->
+                <div class="avail-cal-grid" id="pub-cal-grid">
+                    <div class="avail-day-head">Mon</div>
+                    <div class="avail-day-head">Tue</div>
+                    <div class="avail-day-head">Wed</div>
+                    <div class="avail-day-head">Thu</div>
+                    <div class="avail-day-head">Fri</div>
+                    <div class="avail-day-head">Sat</div>
+                    <div class="avail-day-head">Sun</div>
+                    <div class="avail-cal-loading" id="pub-cal-loading" style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(200,216,204,0.3);font-size:0.75rem">Loading calendar...</div>
+                </div>
+
+                <!-- Selected range info -->
+                <div class="avail-selection" id="avail-selection" style="display:none">
+                    <div class="avail-selection-inner">
+                        <div class="avail-sel-dates" id="avail-sel-dates">—</div>
+                        <div class="avail-sel-info" id="avail-sel-info"></div>
+                        <button class="btn-primary" id="avail-book-btn" onclick="bookFromCalendar()" style="font-size:0.68rem;padding:0.6rem 1.5rem">Book These Dates</button>
+                        <button class="avail-clear-btn" onclick="clearCalSelection()">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXPERIENCES
+    ============================================================ -->
+    <section class="experiences section-pad" id="experiences">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">What We Offer</p>
+                <h2>The <em>Ledge</em> Experience</h2>
+            </div>
+
+            <div class="exp-grid">
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </div>
+                    <h3>Sunrise Views</h3>
+                    <p>Wake up to the most breathtaking panoramic sunrise over Baguio City from your private balcony or the shared viewing deck.</p>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                            <line x1="6" y1="1" x2="6" y2="4"/>
+                            <line x1="10" y1="1" x2="10" y2="4"/>
+                            <line x1="14" y1="1" x2="14" y2="4"/>
+                        </svg>
+                    </div>
+                    <h3>Free Breakfast</h3>
+                    <p>Start every morning with a complimentary breakfast served fresh, with a full view of the city and pine-covered mountains.</p>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                            <path d="M2 2l7.586 7.586"/>
+                            <circle cx="11" cy="11" r="2"/>
+                        </svg>
+                    </div>
+                    <h3>Paint on Me</h3>
+                    <p>Our signature creative challenge — unleash your inner artist and take home a personal memory of your Baguio stay.</p>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="9" y1="21" x2="9" y2="9"/>
+                        </svg>
+                    </div>
+                    <h3>Board Games</h3>
+                    <p>Cozy evenings with a curated collection of board games and card games available to all guests of the property.</p>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3>Garden Walks</h3>
+                    <p>Stroll through our landscaped garden paths lined with local plants, stone walls, and fresh mountain air.</p>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Photo Spots</h3>
+                    <p>Every corner of The Ledge is a frame-worthy shot — from the fog-drenched deck at 5am to the glittering city lights at midnight.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============================================================
+         TESTIMONIALS
+    ============================================================ -->
+    <section class="testimonials section-pad">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">Guest Reviews</p>
+                <h2>Guests <em>Love</em> The Ledge</h2>
+            </div>
+
+            <div class="testimonials-grid" id="approved-testimonials">
+
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>
+                        "The place was cozy, stylish, and had a breathtaking view of the mountains. The perfect mix of comfort and relaxation. I'd definitely come back."
+                    </blockquote>
+                    <cite>— Baguio Traveler</cite>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>
+                        "Our first experience here deserves a five-star rating. The amenities are very thoughtful and the staff are honest, guiding, and on-time."
+                    </blockquote>
+                    <cite>— Couple from Manila</cite>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>
+                        "Superb! The staff is commendable and the view is amazing. The place is exceptionally clean. This will not be our last time booking here."
+                    </blockquote>
+                    <cite>— Family Staycation</cite>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FEEDBACK SECTION
+    ============================================================ -->
+    <section class="feedback-section section-pad" id="feedback">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">Share Your Experience</p>
+                <h2>Leave <em>Feedback</em></h2>
+                <p class="section-sub">We value your thoughts. Share your experience at The Ledge.</p>
+            </div>
+
+            <div class="feedback-form-container">
+                <form id="feedback-form" onsubmit="submitFeedback(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="feedback-name" placeholder="Your name" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Your Email</label>
+                            <input type="email" id="feedback-email" placeholder="your@email.com" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="star-rating" id="star-rating">
+                            <span class="star" data-rating="1">&#9734;</span>
+                            <span class="star" data-rating="2">&#9734;</span>
+                            <span class="star" data-rating="3">&#9734;</span>
+                            <span class="star" data-rating="4">&#9734;</span>
+                            <span class="star" data-rating="5">&#9734;</span>
+                        </div>
+                        <input type="hidden" id="feedback-rating" value="5" />
+                    </div>
+                    <div class="form-group">
+                        <label>Your Feedback</label>
+                        <textarea id="feedback-message" rows="4" placeholder="Tell us about your experience..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         LOCATION
+    ============================================================ -->
+    <section class="location section-pad" id="contact">
+        <div class="container">
+            <div class="location-grid">
+
+                <div class="location-text">
+                    <p class="eyebrow">Getting Here</p>
+                    <h2>In the Heart of<br>Baguio's Hills</h2>
+                    <p class="body-text">
+                        Nestled in the Benguet highlands, The Ledge is a short walk from the main road, surrounded by the
+                        famous pine trees and cool mountain air that make Baguio a beloved escape from the lowland heat.
+                    </p>
+                    <ul class="location-details">
+                        <li>
+                            <span class="loc-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </span>
+                            <span>Baguio City, Benguet, Philippines</span>
+                        </li>
+                        <li>
+                            <span class="loc-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/>
+                                    <circle cx="6.5" cy="16.5" r="2.5"/>
+                                    <circle cx="16.5" cy="16.5" r="2.5"/>
+                                </svg>
+                            </span>
+                            <span>4–5 hours from Manila by car or bus</span>
+                        </li>
+                        <li>
+                            <span class="loc-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </span>
+                            <span>Check-in: 2:00 PM &nbsp;&middot;&nbsp; Check-out: 11:00 AM</span>
+                        </li>
+                        <li>
+                            <span class="loc-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </span>
+                            <span>Message the official Facebook page to confirm bookings</span>
+                        </li>
+                    </ul>
+                    <a
+                        class="btn-outline"
+                        href="https://www.facebook.com/TheLedgeBaguio"
+                        target="_blank"
+                        rel="noopener"
+                    >Message on Facebook</a>
+                </div>
+
+                <div class="location-map">
+                    <div class="map-pin">
+                        <div class="pin-dot"></div>
+                        <div class="pin-label">The Ledge Baguio</div>
+                    </div>
+                    <p class="map-caption">Baguio City &middot; Benguet &middot; Philippines &middot; 2600</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FAQ
+    ============================================================ -->
+    <section class="faq section-pad" id="faq">
+        <div class="container">
+            <div class="section-header">
+                <p class="eyebrow">Frequently Asked Questions</p>
+                <h2>Everything You <em>Need to Know</em></h2>
+            </div>
+
+            <div class="faq-grid">
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How do I book a room at The Ledge?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You can book directly through our website using the reservation form, or message us on our official Facebook page at <strong>facebook.com/TheLedgeBaguio</strong>. We also accept bookings via Cloudbeds. We recommend booking at least 2–3 weeks in advance, especially during peak season (December–January and summer months).</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is breakfast really included for free?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! A complimentary breakfast is included with every room booking. It's served fresh every morning and best enjoyed on the viewing deck with a cup of hot coffee and the city below.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>What are the check-in and check-out times?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Check-in is at <strong>2:00 PM</strong> and check-out is at <strong>11:00 AM</strong>. Early check-in or late check-out may be arranged depending on availability — please message us in advance to request this.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How far is The Ledge from the Baguio city center?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>The Ledge is a short drive or tricycle ride from the main city center. It's conveniently located near popular spots like Session Road, Burnham Park, and various Baguio dining establishments. Exact directions are sent upon confirmed booking.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is parking available on the property?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Limited parking is available near the property. We recommend confirming parking arrangements when you message us to book, especially during holidays and weekends when the area gets busy.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Are pets allowed at The Ledge?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Currently, The Ledge is not pet-friendly to ensure a comfortable and allergen-free environment for all guests. We appreciate your understanding.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>What is the cancellation policy?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Cancellations made at least <strong>72 hours before</strong> your check-in date are eligible for a full refund or rebooking. Cancellations made within 72 hours may be subject to a partial fee. Please reach out to us directly for special circumstances.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is Wi-Fi available in all rooms?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, free Wi-Fi is available throughout the property including all rooms and common areas. Connection is reliable for both work and streaming.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         CTA BANNER
+    ============================================================ -->
+    <section class="cta-banner">
+        <div class="container">
+            <p class="eyebrow">Escape the Heat. Find Your Ledge.</p>
+            <h2>Your Mountain <em>Retreat Awaits</em></h2>
+            <p class="cta-sub">Limited rooms available. Book directly for the best rates and a personalized welcome.</p>
+            <div class="cta-actions">
+                <button class="btn-primary btn-lg" onclick="openModal()">Reserve Your Stay</button>
+                <a
+                    class="btn-ghost btn-lg"
+                    href="https://www.facebook.com/TheLedgeBaguio"
+                    target="_blank"
+                    rel="noopener"
+                >Message on Facebook</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+
+                <div class="footer-brand">
+                    <p class="footer-logo">The <span>Ledge</span></p>
+                    <p class="footer-tagline">An overlooking bed &amp; breakfast in the heart of Baguio City, Benguet.</p>
+                </div>
+
+                <div class="footer-links">
+                    <p class="footer-heading">Navigate</p>
+                    <a href="#rooms">Rooms</a>
+                    <a href="#experiences">Experiences</a>
+                    <a href="#gallery">Gallery</a>
+                    <a href="#about">About</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+
+                <div class="footer-links">
+                    <p class="footer-heading">Contact</p>
+                    <a href="https://www.facebook.com/TheLedgeBaguio" target="_blank" rel="noopener">Facebook</a>
+                    <a href="https://www.instagram.com/theledgebaguio__/" target="_blank" rel="noopener">Instagram</a>
+                    <a href="https://www.tiktok.com/@theledgebaguio" target="_blank" rel="noopener">TikTok</a>
+                </div>
+
+                <div class="footer-book">
+                    <p class="footer-heading">Book Direct</p>
+                    <p class="footer-note">Best rates guaranteed when you book directly through us.</p>
+                    <button class="btn-primary" onclick="openModal()">Book Now</button>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; <span id="footer-year"></span> The Ledge Baguio. All rights reserved.</p>
+                <p>Baguio City, Benguet, Philippines 2600</p>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- ============================================================
+         BOOKING MODAL
+    ============================================================ -->
+    <div class="modal-backdrop" id="modal" onclick="handleBackdropClick(event)">
+        <div class="modal">
+
+            <button class="modal-close" onclick="closeModal()">&#10005;</button>
+            <h2>Reserve a Room</h2>
+            <p class="modal-sub">Complete your reservation at The Ledge Baguio</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input id="modal-firstname" type="text" placeholder="Juan" />
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input id="modal-lastname" type="text" placeholder="dela Cruz" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input id="modal-email" type="email" placeholder="juan@example.com" />
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input id="modal-phone" type="tel" placeholder="+63 9XX XXX XXXX" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Check In</label>
+                    <input id="modal-checkin" type="date" />
+                </div>
+                <div class="form-group">
+                    <label>Check Out</label>
+                    <input id="modal-checkout" type="date" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Room Type</label>
+                    <select id="modal-room">
+                        <option value="1">The Mist Room — PHP 1,500 / night</option>
+                        <option value="2">The Pine Suite — PHP 2,200 / night</option>
+                        <option value="3">The Ledge Suite — PHP 3,000 / night</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Number of Guests</label>
+                    <select id="modal-guests">
+                        <option value="1">1 Guest</option>
+                        <option value="2">2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Special Requests</label>
+                <input id="modal-requests" type="text" placeholder="Early check-in, anniversary setup, etc." />
+            </div>
+
+            <div class="form-group">
+                <label>Promo Code <span style="opacity:0.4;font-size:0.85em">(optional)</span></label>
+                <input id="modal-promo" type="text" placeholder="e.g. LEDGE10" style="text-transform:uppercase" />
+            </div>
+
+            <!-- Live price preview populated by fetchPricePreview() in main.js -->
+            <div id="price-preview-box" style="display:none"></div>
+
+            <button class="btn-primary btn-full" onclick="submitBooking()">Confirm Reservation</button>
+
+        </div>
+    </div>
+
+    <!-- My Bookings Modal -->
+    <div class="modal-backdrop" id="my-bookings-backdrop" onclick="if(event.target===this)closeMyBookings()">
+        <div class="modal my-bookings-modal">
+            <button class="modal-close" onclick="closeMyBookings()">&#10005;</button>
+            <div class="mbp-header">
+                <div class="mbp-avatar" id="mbp-avatar">G</div>
+                <div>
+                    <p class="mbp-name" id="mbp-name">Guest</p>
+                    <p class="mbp-email" id="mbp-email"></p>
+                </div>
+            </div>
+            <div class="mbp-body" id="mbp-body">
+                <div class="mbp-empty"><p>Loading...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Structured Data ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BedAndBreakfast",
+      "name": "The Ledge Baguio",
+      "url": "https://www.theledgebaguio.com",
+      "logo": "https://www.theledgebaguio.com/public/images/og-cover.jpg",
+      "image": "https://www.theledgebaguio.com/public/images/og-cover.jpg",
+      "description": "Boutique bed and breakfast perched above Baguio City with panoramic mountain and city views, free breakfast, and curated in-house experiences.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Baguio City",
+        "addressRegion": "Benguet",
+        "postalCode": "2600",
+        "addressCountry": "PH"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 16.4023,
+        "longitude": 120.5960
+      },
+      "telephone": "+639171234567",
+      "email": "theledgebaguio@gmail.com",
+      "priceRange": "PHP 1500 - PHP 3500",
+      "checkinTime": "14:00",
+      "checkoutTime": "11:00",
+      "currenciesAccepted": "PHP",
+      "paymentAccepted": "GCash, Cash, Bank Transfer",
+      "amenityFeature": [
+        { "@type": "LocationFeatureSpecification", "name": "Free Breakfast", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Free Wi-Fi", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "City View", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Air Conditioning", "value": true }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/TheLedgeBaguio",
+        "https://www.instagram.com/theledgebaguio__/",
+        "https://www.tiktok.com/@theledgebaguio"
+      ]
+    }
+    </script>
+
+    <!-- ── Dynamic year in footer ── -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('footer-year');
+        if (el) el.textContent = new Date().getFullYear();
+      });
+    </script>
+
+        <script src="/public/js/api.js"></script>
+    <script src="/public/js/main.js"></script>
+
+
+    <!-- Cancellation Request Modal -->
+    <div class="modal-backdrop" id="cancel-request-backdrop" onclick="if(event.target===this)closeCancelModal()" style="display:none;align-items:center;justify-content:center">
+        <div class="modal" style="max-width:500px;padding:2.5rem;position:relative">
+            <button class="modal-close" onclick="closeCancelModal()">&#10005;</button>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;margin-bottom:0.25rem">Request Cancellation</p>
+            <p style="font-size:0.7rem;color:rgba(58,46,32,0.5);margin-bottom:1.8rem;line-height:1.6">Fill in the details below and we will review your request within 24 hours. You will be contacted to confirm the refund.</p>
+
+            <div id="cancel-form-step">
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(58,46,32,0.55);margin-bottom:0.4rem">Booking Reference *</label>
+                    <input id="cr-reference" type="text" placeholder="e.g. LDG-ABC001" style="text-transform:uppercase" class="modal-input">
+                </div>
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(58,46,32,0.55);margin-bottom:0.4rem">Name on Booking *</label>
+                    <input id="cr-name" type="text" placeholder="Full name used when booking" class="modal-input">
+                </div>
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(58,46,32,0.55);margin-bottom:0.4rem">Check-in Date</label>
+                    <input id="cr-date" type="date" class="modal-input">
+                </div>
+                <div style="margin-bottom:1rem">
+                    <label style="display:block;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(58,46,32,0.55);margin-bottom:0.4rem">Refund Payment Details *</label>
+                    <textarea id="cr-payment" rows="3" placeholder="e.g. GCash: 0917-123-4567 (Juan Dela Cruz)&#10;or BDO Savings Acc# 1234567890 (Juan Dela Cruz)" class="modal-input" style="resize:vertical;width:100%"></textarea>
+                </div>
+                <div style="margin-bottom:1.4rem">
+                    <label style="display:block;font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(58,46,32,0.55);margin-bottom:0.4rem">Reason for Cancellation</label>
+                    <textarea id="cr-reason" rows="2" placeholder="Optional" class="modal-input" style="resize:vertical;width:100%"></textarea>
+                </div>
+                <div style="font-size:0.7rem;color:rgba(58,46,32,0.5);line-height:1.7;margin-bottom:1.4rem;padding:0.9rem;border-left:2px solid rgba(197,162,85,0.4);background:rgba(58,46,32,0.03)">
+                    Refund amounts are subject to our cancellation policy and the number of days before your check-in date. We will contact you to confirm the final refund amount.
+                </div>
+                <button onclick="submitCancelRequest()" class="btn-primary" style="width:100%">Submit Cancellation Request</button>
+            </div>
+
+            <div id="cancel-success-step" style="display:none;text-align:center;padding:1.5rem 0">
+                <div style="font-size:2.8rem;color:#3d8b6a;margin-bottom:0.8rem">&#10003;</div>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:#3d8b6a;margin-bottom:0.6rem">Request Submitted</p>
+                <p style="font-size:0.78rem;color:rgba(58,46,32,0.55);line-height:1.8;margin-bottom:1.6rem">We have received your cancellation request and will review it within 24 hours. We will reach out to confirm the refund amount and process.</p>
+                <button onclick="closeCancelModal()" class="btn-primary" style="width:100%">Done</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
